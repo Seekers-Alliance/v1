@@ -4,7 +4,7 @@ export default function SimpleNavbar() {
   const items = [
     {
       name: 'HOME',
-      link: '/home',
+      link: '/open-pack/start',
     },
     {
       name: 'OPEN PACK',
