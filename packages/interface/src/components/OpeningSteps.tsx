@@ -11,7 +11,7 @@ import {
   watchRandomWordsFulfilledEventsByRequestIds,
   watchRequestCompletedEventsByRequestIds,
 } from '@/core/event';
-import { formatHex, formatQuestionId, getSupportedChainId } from '@/common';
+import { formatHex, getSupportedChainId } from '@/common';
 import { LinkOutlined } from '@ant-design/icons';
 import { useAddresses } from '@/hooks/useAddresses';
 import useWaitRequestSent from '@/hooks/useWaitRequestSent';
@@ -216,7 +216,7 @@ export function OpeningSteps() {
                   <div className='flex'>
                     <span>
                       {requestId
-                        ? formatQuestionId(requestId)
+                        ? requestId.toString()
                         : 'wait for request'}
                     </span>
                     <a href={'https://vrf.chain.link/arbitrum/127'}>
