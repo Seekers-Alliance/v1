@@ -1,21 +1,9 @@
 'use client';
-import Image from 'next/image';
-import { ConnectButton } from '@rainbow-me/rainbowkit';
-import { EventList } from '@/components/EventList';
-import CardProbabilityPieChart from '@/components/CardProbabilityPieChart';
-import NFTCard from '@/components/NFTCard';
-import { Button, Modal } from 'antd';
-import { OpeningSteps } from '@/components/OpeningSteps';
 import { useCallback, useEffect, useState } from 'react';
-import styled from 'styled-components';
 import {
   PrimaryButton,
-  SelectedButton,
   SelectingButton,
-  UnSelectedButton,
 } from '@/components/Button';
-import { ExportOutlined } from '@ant-design/icons';
-import SimpleNavbar from '@/components/SimpleNavbar';
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import ConnectWalletButton from '@/components/ConnectWalletButton';
@@ -128,7 +116,7 @@ interface BuyStatusButtonProps {
   network: string;
 }
 
-export function BuyStatusButton({ network }: BuyStatusButtonProps) {
+function BuyStatusButton({ network }: BuyStatusButtonProps) {
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
