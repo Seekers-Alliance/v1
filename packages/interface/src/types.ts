@@ -11,3 +11,10 @@ export interface QueryResult<T> {
   error: Error | null;
   data: T | null;
 }
+
+export enum PoolProcessStatus {
+  SelectNFT,
+  CreateUnit,
+    CreatePool,
+    Done,
+}

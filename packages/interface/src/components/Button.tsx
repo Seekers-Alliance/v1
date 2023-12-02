@@ -12,6 +12,14 @@ export const BaseButton = styled(Button)`
   border-radius: 4px;
 `;
 
+
+export const Primary2Button = styled(BaseButton)`
+  border: 1px solid #FFFD8C;
+  background: #FFFD8C;
+  text-transform: none;
+  font-family: 'Work Sans',sans-serif;
+`;
+
 export const SelectedButton = styled(BaseButton)`
   color: #29ffef;
   background-color: rgba(
