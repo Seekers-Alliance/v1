@@ -1,16 +1,16 @@
 'use client';
 import { Layout } from 'antd';
-import ConnectWalletButton from "@/components/ConnectWalletButton";
-import {Primary2Button} from "@/components/Button";
-import {useRouter} from "next/navigation";
+import ConnectWalletButton from '@/components/ConnectWalletButton';
+import { Primary2Button } from '@/components/Button';
+import { useRouter } from 'next/navigation';
 
 const { Footer } = Layout;
 
 export default function Page() {
-  const router=useRouter()
-  const handleNextStep=()=>{
-    router.push('/manage/pools/select')
-  }
+  const router = useRouter();
+  const handleNextStep = () => {
+    router.push('/manage/pools/select');
+  };
   return (
     <div className='flex justify-center'>
       <div className='fixed top-[206px]'>
@@ -26,10 +26,8 @@ export default function Page() {
               PULL RATES
             </span>
           </div>
-          <div className='w-[300px] h-[40px]'>
-            <Primary2Button onClick={handleNextStep}>
-              Hahaha
-            </Primary2Button>
+          <div className='h-[40px] w-[300px]'>
+            <Primary2Button onClick={handleNextStep}>Hahaha</Primary2Button>
           </div>
         </div>
       </div>

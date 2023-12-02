@@ -18,7 +18,7 @@ export default function AddProbabilityCard() {
       }}
     >
       <div className='flex w-[110px] flex-col items-center justify-between'>
-        <div className="mt-1 font-['Space Grotesk'] w-[100%] px-2 text-[12px] font-bold uppercase text-white">
+        <div className="font-['Space Grotesk'] mt-1 w-[100%] px-2 text-[12px] font-bold uppercase text-white">
           ID-001
         </div>
         <img src='/Bubble%20Gunner.png' className='w-[110px]' />

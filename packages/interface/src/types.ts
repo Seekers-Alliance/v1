@@ -15,6 +15,6 @@ export interface QueryResult<T> {
 export enum PoolProcessStatus {
   SelectNFT,
   CreateUnit,
-    CreatePool,
-    Done,
+  CreatePool,
+  Done,
 }

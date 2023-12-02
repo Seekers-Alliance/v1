@@ -215,9 +215,7 @@ export function OpeningSteps() {
                 <Descriptions.Item label='RequestId'>
                   <div className='flex'>
                     <span>
-                      {requestId
-                        ? requestId.toString()
-                        : 'wait for request'}
+                      {requestId ? requestId.toString() : 'wait for request'}
                     </span>
                     <a href={'https://vrf.chain.link/arbitrum/127'}>
                       <LinkOutlined />

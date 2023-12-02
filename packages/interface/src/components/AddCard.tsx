@@ -8,27 +8,29 @@ const BaseCard = styled(Card)`
 `;
 
 interface AddCardProps {
-    onClick?: () => void;
-    children?: React.ReactNode;
+  onClick?: () => void;
+  children?: React.ReactNode;
 }
 
-export function AddCard({children, onClick}: AddCardProps) {
+export function AddCard({ children, onClick }: AddCardProps) {
   return (
     <BaseCard
-         className='w-[100%] h-[100%]'
+      className='h-[100%] w-[100%]'
       bodyStyle={{
         paddingTop: '0px',
         paddingBottom: '0px',
         paddingLeft: '0px',
         paddingRight: '0px',
-          width: `100%`,
-          height: `100%`,
+        width: `100%`,
+        height: `100%`,
       }}
     >
-        <div className='w-[100%] h-[100%] flex flex-col items-center justify-center'>
-            <img src='/add.svg' className='w-[30px] h-[30px]' />
-            <div className="text-yellow-400 text-sm font-normal font-['Work Sans']">{children}</div>
+      <div className='flex h-[100%] w-[100%] flex-col items-center justify-center'>
+        <img src='/add.svg' className='h-[30px] w-[30px]' />
+        <div className="font-['Work Sans'] text-sm font-normal text-yellow-400">
+          {children}
         </div>
+      </div>
     </BaseCard>
   );
 }

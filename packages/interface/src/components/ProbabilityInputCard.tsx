@@ -1,12 +1,13 @@
 import { Card, Input } from 'antd';
 import styled from 'styled-components';
 
-
 interface ProbabilityInputCardProps {
-    children?: React.ReactNode;
+  children?: React.ReactNode;
 }
 
-export default function ProbabilityInputCard({children}: ProbabilityInputCardProps) {
+export default function ProbabilityInputCard({
+  children,
+}: ProbabilityInputCardProps) {
   return (
     <BaseCard
       bodyStyle={{
@@ -14,12 +15,12 @@ export default function ProbabilityInputCard({children}: ProbabilityInputCardPro
         paddingBottom: '0px',
         paddingLeft: '0px',
         paddingRight: '0px',
-          width: `100%`,
-            height: `100%`,
+        width: `100%`,
+        height: `100%`,
       }}
     >
-      <div className='flex w-[100%] h-[100%] flex-col items-center justify-between'>
-          {children}
+      <div className='flex h-[100%] w-[100%] flex-col items-center justify-between'>
+        {children}
         {/*<div className="mt-1 font-['Space Grotesk'] w-[100%] px-2 text-[12px] font-bold uppercase text-white">*/}
         {/*  ID-001*/}
         {/*</div>*/}
@@ -37,4 +38,3 @@ const BaseCard = styled(Card)`
   border: 1px solid #374151;
   background: #111827;
 `;
-

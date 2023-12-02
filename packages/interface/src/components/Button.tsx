@@ -12,12 +12,11 @@ export const BaseButton = styled(Button)`
   border-radius: 4px;
 `;
 
-
 export const Primary2Button = styled(BaseButton)`
-  border: 1px solid #FFFD8C;
-  background: #FFFD8C;
+  border: 1px solid #fffd8c;
+  background: #fffd8c;
   text-transform: none;
-  font-family: 'Work Sans',sans-serif;
+  font-family: 'Work Sans', sans-serif;
 `;
 
 export const SelectedButton = styled(BaseButton)`
