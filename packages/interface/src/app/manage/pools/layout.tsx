@@ -1,56 +1,19 @@
 'use client';
-import {Layout, Menu} from 'antd';
+import {Layout} from 'antd';
 import PoolProcessHeader from "@/components/PoolProcessHeader";
 import Link from "next/link";
+import PoolProcessSider from "@/components/PoolProcessSider";
 
-const { Footer,Sider,Content } = Layout;
+const { Content } = Layout;
 
 export default function PageLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-    const items = [
-        {
-            key: '1',
-            title: 'Token Pool',
-            label:
-                <Link href='/manage/pools/select'>
-                    <div className='text-white' >Token Pool</div>
-                </Link>,
-        },
-        {
-            key: '2',
-            title: 'Unit Pools',
-            label:
-                <Link href='/manage/pools/createUnit'>
-                <div className='text-white' >Unit Pools</div>
-                </Link>,
-        },
-        {
-            key: '3',
-            title: 'Drawing Pool',
-            label:
-                <Link href='/manage/pools/createDrawing'>
-                <div className='text-white' >Drawing Pool</div>
-                </Link>,
-        },
-        {
-            key: '4',
-            title: 'Final Configurations',
-            label: <Link href='/manage/pools/final'><div className='text-white' >Final Configurations</div></Link>,
-        }
-        ]
   return (
     <Layout className='flex justify-between bg-gray-800'>
-        <Sider style={{backgroundColor: 'rgb(31 41 55)'}}>
-            <div className='flex justify-center mt-[37px]'>
-                <img src='/Seekers-Alliance-1.png' width={101} height={34} />
-            </div>
-            <div className='mt-[60px]'>
-                <Menu theme='dark' style={{backgroundColor: 'rgb(31 41 55)'}} mode="inline" items={items} />
-            </div>
-        </Sider>
+        <PoolProcessSider/>
         <Layout className='flex justify-between bg-gray-800'>
             <PoolProcessHeader/>
             <Content style={{ margin: '24px 16px 0' }}>
