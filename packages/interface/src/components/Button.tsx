@@ -5,6 +5,7 @@ import { ReactNode } from 'react';
 export const BaseButton = styled(Button)`
   width: 100%;
   height: 100%;
+  color: #000000;
   font-size: 21px;
   font-weight: bold;
   text-transform: uppercase;
