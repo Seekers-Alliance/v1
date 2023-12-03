@@ -1,7 +1,7 @@
 import { decodeEventLog, parseAbi, PublicClient } from 'viem';
 import VRFCOORDINATOR_V2_ABI from '@/abis/VRFCoordinatorV2.json';
-import FOMO_SUBSCRIPTION_MANAGER_ABI from '@/abis/FOMOSubscriptionManager.json';
-import FOMO_ABI from '@/abis/FOMO.json';
+import VRF_MANAGER_ABI from '@/abis/VRFManager.json';
+import DRAWING_ABI from '@/abis/Drawing.json';
 import { Address } from 'abitype';
 import { Hash, Log } from 'viem';
 
@@ -83,7 +83,7 @@ export async function getRequestCompletedEventsByRequestIds(
 ): Promise<EventData<RequestCompletedParams>[]> {
   const config = {
     address: params.address,
-    abi: FOMO_ABI,
+    abi: DRAWING_ABI,
     eventName: 'RequestCompleted',
     args: params.args,
     fromBlock: params.fromBlock,
@@ -103,7 +103,7 @@ export function watchRequestCompletedEventsByRequestIds(
 ) {
   const config = {
     address: fomoAddress,
-    abi: FOMO_ABI,
+    abi: DRAWING_ABI,
     eventName: 'RequestCompleted',
     args: {
       requestId: requestIds,
@@ -142,7 +142,7 @@ export function filterRequestSentEvents(
     if (!eventTopic) continue;
     if (eventTopic.toLowerCase() === REQUEST_SENT_TOPIC.toLowerCase()) {
       const eventLog = decodeEventLog({
-        abi: FOMO_SUBSCRIPTION_MANAGER_ABI,
+        abi: VRF_MANAGER_ABI,
         data: e.data,
         topics: e.topics,
       });
