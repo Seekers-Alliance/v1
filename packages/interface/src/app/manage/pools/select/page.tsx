@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AddCard } from '@/components/AddCard';
 import { usePoolProcessStatusStore } from '@/stores/poolProcessStatus';
 import { useEffect } from 'react';
-import { PoolProcessStatus } from '@/types';
+import {PoolProcessStatus, TOKEN_LIST} from '@/types';
 
 export default function Page() {
   const { status, updateStatus } = usePoolProcessStatusStore();
@@ -25,7 +25,7 @@ export default function Page() {
           <div className='w-[110px]'>
             <AddCard>Add NFT</AddCard>
           </div>
-          {new Array(7).fill(0).map((_, index) => {
+          {TOKEN_LIST.map((_, index) => {
             return (
               <div className='h-52 w-[110px]' key={index}>
                 <AddProbabilityCard key={index} />
