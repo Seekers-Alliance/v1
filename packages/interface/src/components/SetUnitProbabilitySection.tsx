@@ -11,16 +11,22 @@ import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 
 interface SetUnitProbabilitySectionProps {
+  // TODO: fake index to be replaced
+  index: number;
   poolName: string;
 }
 
 export default function SetUnitProbabilitySection({
+  index,
   poolName,
 }: SetUnitProbabilitySectionProps) {
   const { getPool, add } = useUnitPoolStore();
+  const defaultPool = useMemo(() => getPool(poolName), [poolName]);
+  const [poolId, setPoolId] = React.useState<bigint | null>(null);
+
   const poolProbabilityList = useMemo(
     () =>
-      getPool(poolName)?.probabilities ||
+      defaultPool?.probabilities ||
       Array.from({ length: TOKEN_LIST.length }, () => 0),
     [poolName]
   );
@@ -40,11 +46,12 @@ export default function SetUnitProbabilitySection({
   console.log(getPool(poolName));
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
-    // add({
-    //   name: poolName,
-    //   probabilities: probabilityList,
-    // });
-    submit?.({ args: [1, probabilityList] });
+    add({
+      id: index.toString(),
+      name: poolName,
+      probabilities: probabilityList,
+    });
+    // submit?.({ args: [1, probabilityList] });
   }, [poolName, add, probabilityList]);
   const handleUpdateProbability = useCallback(
     (index: number, value: number) => {
@@ -70,14 +77,15 @@ export default function SetUnitProbabilitySection({
       confirmError
     );
   }, [isConfirmError, isConfirmSuccess, confirmError]);
-  useEffect(() => {
-    if (isConfirmSuccess) {
-      add({
-        name: poolName,
-        probabilities: probabilityList,
-      });
-    }
-  }, [isConfirmSuccess]);
+  // useEffect(() => {
+  //   if (isConfirmSuccess) {
+  //     add({
+  //       id: index.toString(),
+  //       name: poolName,
+  //       probabilities: probabilityList,
+  //     });
+  //   }
+  // }, [isConfirmSuccess]);
   return (
     <>
       {contextHolder}

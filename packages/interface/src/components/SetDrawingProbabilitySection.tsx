@@ -11,35 +11,40 @@ import { TransactionAction } from '@/components/transaction';
 import { useWaitForTransaction } from 'wagmi';
 
 interface SetDrawingProbabilitySectionProps {
+  // TODO: fake index to be replaced
+  index: number;
   poolName: string;
 }
 
 export default function SetDrawingProbabilitySection({
+  index,
   poolName,
 }: SetDrawingProbabilitySectionProps) {
   const { getPool, add } = useDrawingPoolStore();
+  const defaultPool = useMemo(() => getPool(poolName), [poolName]);
+  const [poolId, setPoolId] = React.useState<bigint | null>(null);
   const { pools: unitPools } = useUnitPoolStore();
   const poolProbabilityList = useMemo(
     () =>
-      getPool(poolName)?.probabilities ||
+      defaultPool?.probabilities ||
       Array.from({ length: unitPools.list.length }, () => 0),
-    [poolName]
+    [unitPools.list.length]
   );
   const [probabilityList, setProbabilityList] =
     React.useState<number[]>(poolProbabilityList);
-  console.log(getPool(poolName));
   const { handleTxnResponse, contextHolder } = useTxnNotify();
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
-    // add({
-    //   name: poolName,
-    //   probabilities: probabilityList,
-    // });
-    setDrawing({
-      args: [0, probabilityList],
+    add({
+      id: index.toString(),
+      name: poolName,
+      probabilities: probabilityList,
     });
-    console.log(probabilityList);
-  }, [poolName, add, probabilityList]);
+    // setDrawing({
+    //   args: [0, probabilityList],
+    // });
+    // console.log(probabilityList);
+  }, [poolId, add, probabilityList]);
   const {
     data: setDrawingData,
     write: setDrawing,
@@ -77,29 +82,22 @@ export default function SetDrawingProbabilitySection({
       isSetDrawingSuccess,
       setDrawingError
     );
-    if (isSetDrawingTxnSuccess) {
-      add({
-        name: poolName,
-        probabilities: probabilityList,
-      });
-    }
   }, [
     isSetDrawingTxnError,
     isSetDrawingTxnSuccess,
     setDrawingTxnError,
-    poolName,
+    poolId,
     probabilityList,
   ]);
 
-  useEffect(() => {
-    if (isSetDrawingTxnSuccess) {
-      add({
-        name: poolName,
-        probabilities: probabilityList,
-      });
-    }
-  }, [isSetDrawingTxnSuccess]);
-
+  // useEffect(() => {
+  //   if (isSetDrawingTxnSuccess) {
+  //     add({
+  //       name: poolId,
+  //       probabilities: probabilityList,
+  //     });
+  //   }
+  // }, [isSetDrawingTxnSuccess]);
   return (
     <>
       {contextHolder}
