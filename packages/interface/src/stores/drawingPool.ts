@@ -12,6 +12,7 @@ type DrawingPoolStore = {
 };
 
 interface PoolProbabilities {
+  id: string;
   name: string;
   probabilities: number[];
 }
