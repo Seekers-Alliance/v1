@@ -13,7 +13,7 @@ export default function PageLayout({
       {children}
       <Footer className='inline-flex h-[100%] w-[100%] items-center justify-center bg-gray-900 py-5'>
         <div className="font-['Source Sans Pro'] w-64 text-center text-sm font-normal leading-normal text-white">
-          © 2023 Seeker Alliance
+          © 2023 Seekers Alliance
         </div>
       </Footer>
     </Layout>

@@ -24,7 +24,7 @@ export default function Page() {
         <ProbabilityTree />
       </div>
       <div className='mt-[23px] w-[300px]'>
-        <Primary2Button>Final Setup</Primary2Button>
+        <Primary2Button>Finish Setup</Primary2Button>
       </div>
     </div>
   );
