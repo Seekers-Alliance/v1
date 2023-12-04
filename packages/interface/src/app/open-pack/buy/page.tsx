@@ -3,7 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { PrimaryButton, SelectingButton } from '@/components/Button';
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
 import { useRouter } from 'next/navigation';
-import ConnectWalletButton from '@/components/ConnectWalletButton';
+import {ConnectWalletButton} from '@/components/ConnectWalletButton';
 
 export default function Page() {
   const networkList = ['AVALANCHE', 'ETHEREUM', 'ARBITRUM'];
