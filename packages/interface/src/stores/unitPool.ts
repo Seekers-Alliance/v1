@@ -1,10 +1,10 @@
 import { create } from 'zustand';
-import {Md5} from "ts-md5";
+import { Md5 } from 'ts-md5';
 
 type UnitPoolStore = {
   pools: {
-    list: string[],
-    map: Map<string, PoolProbabilities>
+    list: string[];
+    map: Map<string, PoolProbabilities>;
   };
   add: (pool: PoolProbabilities) => void;
   remove: (pool: PoolProbabilities) => void;
@@ -16,26 +16,27 @@ interface PoolProbabilities {
   probabilities: number[];
 }
 
-export const useUnitPoolStore = create<UnitPoolStore>((set,get) => ({
+export const useUnitPoolStore = create<UnitPoolStore>((set, get) => ({
   pools: {
     list: [],
-    map: new Map()
+    map: new Map(),
   },
   add: (pool: PoolProbabilities) =>
     set((state) => {
       if (!state.pools.list.includes(pool.name)) {
         state.pools.list.push(pool.name);
       }
-        state.pools.map.set(Md5.hashStr(pool.name), pool);
-        return state;
+      state.pools.map.set(Md5.hashStr(pool.name), pool);
+      return state;
     }),
-  remove: (pool: PoolProbabilities) =>{
+  remove: (pool: PoolProbabilities) => {
     set((state) => {
       state.pools.list = state.pools.list.filter((i) => i !== pool.name);
       state.pools.map.delete(Md5.hashStr(pool.name));
       return state;
-    })},
-    getPool: (name: string) => {
-        return get().pools.map.get(Md5.hashStr(name));
-    }
+    });
+  },
+  getPool: (name: string) => {
+    return get().pools.map.get(Md5.hashStr(name));
+  },
 }));

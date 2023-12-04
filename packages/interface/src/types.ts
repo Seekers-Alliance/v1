@@ -19,12 +19,12 @@ export enum PoolProcessStatus {
   Done,
 }
 
-export const TOKEN_LIST=[
-    BigInt(1),
-    BigInt(2),
-    BigInt(3),
-    BigInt(4),
-    BigInt(10),
-    BigInt(20),
-    BigInt(100),
-]
+export const TOKEN_LIST = [
+  BigInt(1),
+  BigInt(2),
+  BigInt(3),
+  BigInt(4),
+  BigInt(10),
+  BigInt(20),
+  BigInt(100),
+];

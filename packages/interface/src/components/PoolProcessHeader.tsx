@@ -2,7 +2,7 @@ import React from 'react';
 import { Layout } from 'antd';
 import { usePoolProcessStatusStore } from '@/stores/poolProcessStatus';
 import { PoolProcessStatus } from '@/types';
-import {ConnectButton} from "@rainbow-me/rainbowkit";
+import { ConnectButton } from '@rainbow-me/rainbowkit';
 
 const { Header } = Layout;
 
@@ -30,8 +30,8 @@ export default function PoolProcessHeader() {
       break;
   }
   return (
-    <Header className='h-[110px] w-[1000px] inline-flex items-center bg-gray-800'>
-      <div className='w-[100%] flex items-center justify-between'>
+    <Header className='inline-flex h-[110px] w-[1000px] items-center bg-gray-800'>
+      <div className='flex w-[100%] items-center justify-between'>
         <div className='inline-flex items-center justify-start gap-4'>
           <div className='h-10 w-1 bg-yellow-400'></div>
           <div className='inline-flex flex-col items-start justify-start gap-1'>
@@ -43,7 +43,7 @@ export default function PoolProcessHeader() {
             </div>
           </div>
         </div>
-        <ConnectButton/>
+        <ConnectButton />
       </div>
     </Header>
   );

@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 import { AddCard } from '@/components/AddCard';
 import { usePoolProcessStatusStore } from '@/stores/poolProcessStatus';
 import { useEffect } from 'react';
-import {PoolProcessStatus, TOKEN_LIST} from '@/types';
+import { PoolProcessStatus, TOKEN_LIST } from '@/types';
 
 export default function Page() {
   const { status, updateStatus } = usePoolProcessStatusStore();

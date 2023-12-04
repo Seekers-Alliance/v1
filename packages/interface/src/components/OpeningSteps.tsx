@@ -120,7 +120,7 @@ export function OpeningSteps() {
       if (requestId && blockNumberForDrew) {
         return watchRequestCompletedEventsByRequestIds(
           client,
-            drawingAddress,
+          drawingAddress,
           [requestId],
           listener
         );

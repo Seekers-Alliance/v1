@@ -12,7 +12,7 @@ export default function PageLayout({
   children: React.ReactNode;
 }) {
   return (
-    <Layout className='py-4 flex justify-between bg-gray-800'>
+    <Layout className='flex justify-between bg-gray-800 py-4'>
       <PoolProcessSider />
       <Layout className='flex justify-between bg-gray-800'>
         <PoolProcessHeader />
