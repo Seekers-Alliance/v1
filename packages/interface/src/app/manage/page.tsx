@@ -8,7 +8,7 @@ const { Footer } = Layout;
 export default function Page() {
   const router = useRouter();
   const handleNextStep = () => {
-    router.push('/manage/pools/select');
+    router.push('/manage/pools/count');
   };
   return (
     <div className='flex justify-center'>

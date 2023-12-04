@@ -9,8 +9,8 @@ export default function PoolProcessSider() {
       key: '1',
       title: 'TokenID Pool',
       label: (
-        <Link href='/manage/pools/select'>
-          <div className='text-white'>Token Pool</div>
+        <Link href='/manage/pools/count'>
+          <div className='text-white'>TokenID Pool</div>
         </Link>
       ),
     },
