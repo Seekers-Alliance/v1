@@ -1,14 +1,16 @@
-import {Card, Input, InputNumber} from 'antd';
+import { Card, Input, InputNumber } from 'antd';
 import styled from 'styled-components';
 
 interface ProbabilityInputCardProps {
-    defaultValue?: number;
-    onChange?: (value: number | string | null) => void;
-    children?: React.ReactNode;
+  defaultValue?: number;
+  onChange?: (value: number | string | null) => void;
+  children?: React.ReactNode;
 }
 
 export default function ProbabilityInputCard({
-  children,onChange,defaultValue
+  children,
+  onChange,
+  defaultValue,
 }: ProbabilityInputCardProps) {
   return (
     <BaseCard
@@ -23,8 +25,12 @@ export default function ProbabilityInputCard({
     >
       <div className='flex h-[100%] w-[100%] flex-col items-center justify-between'>
         {children}
-        <div className='h-[40px] w-[100%] border-t-[1px] border-solid border-[#374151] flex items-center'>
-          <InputNumber className="w-[100%] bg-[#111827] border-0 text-white" onChange={onChange} defaultValue={defaultValue || 0}/>
+        <div className='flex h-[40px] w-[100%] items-center border-t-[1px] border-solid border-[#374151]'>
+          <InputNumber
+            className='w-[100%] border-0 bg-[#111827] text-white'
+            onChange={onChange}
+            defaultValue={defaultValue || 0}
+          />
         </div>
       </div>
     </BaseCard>
