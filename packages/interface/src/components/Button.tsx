@@ -1,8 +1,8 @@
 import { Button } from 'antd';
 import styled from 'styled-components';
-import React, {ReactNode, useCallback, useMemo} from 'react';
-import {useAccount, useConnect, useNetwork, useSwitchNetwork} from "wagmi";
-import {useRouter} from "next/navigation";
+import React, { ReactNode, useCallback, useMemo } from 'react';
+import { useAccount, useConnect, useNetwork, useSwitchNetwork } from 'wagmi';
+import { useRouter } from 'next/navigation';
 
 export const BaseButton = styled(Button)`
   width: 100%;
@@ -89,8 +89,12 @@ interface SpecificChainButtonProps {
   children: React.ReactNode;
 }
 
-export function SpecificChainButton({chainId,onClick,children}:SpecificChainButtonProps){
-  const {chain}=useNetwork()
+export function SpecificChainButton({
+  chainId,
+  onClick,
+  children,
+}: SpecificChainButtonProps) {
+  const { chain } = useNetwork();
   const { isConnected } = useAccount();
   const { connect, connectors } = useConnect();
   const { switchNetwork } = useSwitchNetwork();
@@ -98,28 +102,29 @@ export function SpecificChainButton({chainId,onClick,children}:SpecificChainButt
     return chain?.id === chainId;
   }, [chain]);
   const router = useRouter();
-  const handleChangeChain = useCallback(
-      () => {
-        if (chain?.id === chainId) {
-          return;
-        }
-        switchNetwork?.(chainId);
-      },
-      [switchNetwork, chain]
-  );
+  const handleChangeChain = useCallback(() => {
+    if (chain?.id === chainId) {
+      return;
+    }
+    switchNetwork?.(chainId);
+  }, [switchNetwork, chain]);
   const handleConnect = useCallback(() => {
     console.log(connectors);
     const connector = connectors.find(
-        (connector) => connector.id === 'injected'
+      (connector) => connector.id === 'injected'
     );
     console.log(connector);
     connect({ connector: connector });
   }, [connect, isConnected]);
-  return(
-      isConnected?
-          (isCorrectChain?
-              <Primary2Button onClick={onClick}>{children}</Primary2Button>:
-              <Primary2Button onClick={handleChangeChain}>Switch Network</Primary2Button>):
-          <Primary2Button onClick={handleConnect}>Connect Wallet</Primary2Button>
-  )
+  return isConnected ? (
+    isCorrectChain ? (
+      <Primary2Button onClick={onClick}>{children}</Primary2Button>
+    ) : (
+      <Primary2Button onClick={handleChangeChain}>
+        Switch Network
+      </Primary2Button>
+    )
+  ) : (
+    <Primary2Button onClick={handleConnect}>Connect Wallet</Primary2Button>
+  );
 }

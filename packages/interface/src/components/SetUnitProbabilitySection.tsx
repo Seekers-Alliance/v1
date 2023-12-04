@@ -1,6 +1,6 @@
 import EditPoolInput from '@/components/EditPoolInput';
 import { AddCard } from '@/components/AddCard';
-import {SpecificChainButton} from '@/components/Button';
+import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import ProbabilityInputCard from '@/components/ProbabilityInputCard';
 import { TOKEN_LIST } from '@/types';
@@ -109,7 +109,10 @@ export default function SetUnitProbabilitySection({
             })}
           </div>
           <div className='w-[300px]'>
-            <SpecificChainButton chainId={43113} onClick={handleSetProbabilities}>
+            <SpecificChainButton
+              chainId={43113}
+              onClick={handleSetProbabilities}
+            >
               Set Probabilities
             </SpecificChainButton>
           </div>
