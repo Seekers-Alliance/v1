@@ -32,15 +32,14 @@ export default function SetDrawingProbabilitySection({
   );
   const [probabilityList, setProbabilityList] =
     React.useState<number[]>(poolProbabilityList);
-  const { handleTxnResponse, contextHolder,api } = useTxnNotify();
+  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
-    const total=probabilityList.reduce((a, b) => a + b, 0);
-    if(total!==100){
+    const total = probabilityList.reduce((a, b) => a + b, 0);
+    if (total !== 100) {
       api.error({
         message: 'Error',
-        description:
-            'The sum of probabilities must be 100',
+        description: 'The sum of probabilities must be 100',
       });
       return;
     }

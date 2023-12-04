@@ -25,17 +25,15 @@ export default function ProbabilityInputCard({
     >
       <div className='flex h-[100%] w-[100%] flex-col items-center justify-between'>
         {children}
-        <div className='h-[40px] w-[100%] flex items-center border-t-[1px] border-solid border-[#374151]'>
-            <div className='p-2 inline-flex justify-between items-center'>
-                <div className='text-white'>
-                    %
-                </div>
-                <InputNumber
-                    className='w-[100%] border-0 bg-[#111827] text-white'
-                    onChange={onChange}
-                    defaultValue={defaultValue || 0}
-                />
-            </div>
+        <div className='flex h-[40px] w-[100%] items-center border-t-[1px] border-solid border-[#374151]'>
+          <div className='inline-flex items-center justify-between p-2'>
+            <div className='text-white'>%</div>
+            <InputNumber
+              className='w-[100%] border-0 bg-[#111827] text-white'
+              onChange={onChange}
+              defaultValue={defaultValue || 0}
+            />
+          </div>
         </div>
       </div>
     </BaseCard>

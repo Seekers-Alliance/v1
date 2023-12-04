@@ -41,5 +41,5 @@ export default function useTxnNotify() {
     },
     [openNotification]
   );
-  return { handleTxnResponse, api,contextHolder };
+  return { handleTxnResponse, api, contextHolder };
 }
