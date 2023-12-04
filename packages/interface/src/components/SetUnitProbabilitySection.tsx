@@ -32,7 +32,7 @@ export default function SetUnitProbabilitySection({
   );
   const [probabilityList, setProbabilityList] =
     React.useState<number[]>(poolProbabilityList);
-  const { handleTxnResponse, contextHolder } = useTxnNotify();
+  const { handleTxnResponse, api,contextHolder } = useTxnNotify();
   const {
     hash,
     submit,
@@ -46,6 +46,15 @@ export default function SetUnitProbabilitySection({
   console.log(getPool(poolName));
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
+    const total=probabilityList.reduce((a, b) => a + b, 0);
+    if(total!==100){
+      api.error({
+        message: 'Error',
+        description:
+            'The sum of probabilities must be 100',
+      });
+      return;
+    }
     add({
       id: index.toString(),
       name: poolName,
