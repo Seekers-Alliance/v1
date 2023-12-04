@@ -1,9 +1,8 @@
 'use client';
 import { Layout } from 'antd';
-import ConnectWalletButton from '@/components/ConnectWalletButton';
 import { Primary2Button } from '@/components/Button';
 import { useRouter } from 'next/navigation';
-
+import { ConnectWallet2Button } from '@/components/ConnectWalletButton';
 const { Footer } = Layout;
 
 export default function Page() {
@@ -27,7 +26,9 @@ export default function Page() {
             </span>
           </div>
           <div className='h-[40px] w-[300px]'>
-            <Primary2Button onClick={handleNextStep}>Hahaha</Primary2Button>
+            <ConnectWallet2Button onAfterConnect={handleNextStep}>
+              Next Step
+            </ConnectWallet2Button>
           </div>
         </div>
       </div>
