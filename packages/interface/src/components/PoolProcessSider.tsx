@@ -7,7 +7,7 @@ export default function PoolProcessSider() {
   const items = [
     {
       key: '1',
-      title: 'Token Pool',
+      title: 'TokenID Pool',
       label: (
         <Link href='/manage/pools/select'>
           <div className='text-white'>Token Pool</div>
