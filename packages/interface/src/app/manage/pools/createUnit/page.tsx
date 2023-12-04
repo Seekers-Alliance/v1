@@ -6,6 +6,7 @@ import SetUnitProbabilitySection from '@/components/SetUnitProbabilitySection';
 import { useRouter } from 'next/navigation';
 import { PoolProcessStatus } from '@/types';
 import { usePoolProcessStatusStore } from '@/stores/poolProcessStatus';
+import useDrawingRead from '@/hooks/useDrawingRead';
 
 const { Footer } = Layout;
 
@@ -26,11 +27,25 @@ export default function Page() {
       updateStatus(PoolProcessStatus.CreateUnit);
     }
   }, [status]);
+  // const {isLoading,error,data}=useDrawingRead('ids',[0])
+  // useEffect(() => {
+  //   console.log(isLoading)
+  //   console.log(error)
+  //   if (data) {
+  //     console.log(data)
+  //   }
+  // }, [data]);
   return (
     <div className='flex flex-col justify-start'>
       <div className='mt-[38px] flex w-[950px] flex-col gap-4'>
         {poolNames.slice(0, poolAmount).map((poolName, index) => {
-          return <SetUnitProbabilitySection poolName={poolName} key={index} />;
+          return (
+            <SetUnitProbabilitySection
+              index={index}
+              poolName={poolName}
+              key={index}
+            />
+          );
         })}
       </div>
       <div className='mt-[23px] w-[300px]'>
