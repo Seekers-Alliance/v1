@@ -112,7 +112,7 @@ export default function SetUnitProbabilitySection({
                   <ProbabilityInputCard
                     defaultValue={poolProbabilityList[index]}
                     onChange={(v) => {
-                      if (v) {
+                      if (v || v === 0) {
                         console.log(v);
                         handleUpdateProbability(index, Number(v));
                       }
