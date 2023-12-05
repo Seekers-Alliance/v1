@@ -4,10 +4,9 @@ import { getSupportedChainId } from '@/common';
 import { useAddresses } from '@/hooks/useAddresses';
 import { useEffect, useRef } from 'react';
 import {
-  EventData,
-  RandomWordsFulfilledParams,
   watchRandomWordsFulfilledEventsByRequestIds,
-} from '@/core/event';
+} from '@/core/events/event';
+import {EventData, RandomWordsFulfilledParams} from "@/core/types";
 
 export default function useWaitRandomFulfilled(
   requestId: bigint[],
