@@ -4,38 +4,13 @@ import VRF_MANAGER_ABI from '@/abis/VRFManager.json';
 import DRAWING_ABI from '@/abis/Drawing.json';
 import { Address } from 'abitype';
 import { Hash, Log } from 'viem';
-
-interface GetEventParams<T> {
-  address: Address;
-  args: T;
-  fromBlock?: bigint;
-  toBlock?: bigint | 'latest';
-}
-
-export interface EventData<T> {
-  address: Address;
-  blockHash: Hash;
-  blockNumber: bigint;
-  logIndex: number;
-  transactionHash: Hash;
-  args: T;
-}
-
-export interface RandomWordsFulfilledParams {
-  requestId: bigint;
-  outputSeed: bigint;
-  payment: bigint;
-  success: boolean;
-}
-
-export interface RequestSentParams {
-  requestId: bigint;
-}
-
-export interface RequestCompletedParams {
-  requestId: bigint;
-  requester: Address;
-}
+import {
+  EventData,
+  GetEventParams,
+  RandomWordsFulfilledParams,
+  RequestCompletedParams,
+  RequestSentParams,
+} from '@/core/types';
 
 export async function getRandomWordsFulfilledEventsByRequestIds(
   client: PublicClient,
@@ -182,7 +157,6 @@ export function mappingRandomWordsFulfilledParams(
     success: a.success,
   } as RandomWordsFulfilledParams;
 }
-
 export function mappingRequestSentParams(
   a: readonly unknown[] | Record<string, unknown>
 ): RequestSentParams {

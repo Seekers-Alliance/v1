@@ -28,7 +28,7 @@ export default function useTxnNotify() {
     ) => {
       const { title, description } = getTransactionInfo(action, isError);
       if (isError) {
-        const msg = `${description}, err is ${
+        const msg = `${description}, error is ${
           //@ts-ignore
           error?.shortMessage || error?.message
         }`;

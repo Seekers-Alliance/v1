@@ -3,35 +3,36 @@ import { AddCard } from '@/components/AddCard';
 import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import ProbabilityInputCard from '@/components/ProbabilityInputCard';
-import { TOKEN_LIST } from '@/types';
 import { useUnitPoolStore } from '@/stores/unitPool';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
+import { useTokenList } from '@/hooks/useTokenList';
+import { filterDrawingEvents } from '@/core/events/drawing';
+import { SetUnitPoolParams } from '@/core/types';
 
 interface SetUnitProbabilitySectionProps {
-  // TODO: fake index to be replaced
-  index: number;
   poolName: string;
+  onLoading?: (isLoading: boolean) => void;
 }
 
 export default function SetUnitProbabilitySection({
-  index,
+  onLoading,
   poolName,
 }: SetUnitProbabilitySectionProps) {
+  const { tokenList } = useTokenList();
   const { getPool, add } = useUnitPoolStore();
   const defaultPool = useMemo(() => getPool(poolName), [poolName]);
   const [poolId, setPoolId] = React.useState<bigint | null>(null);
 
-  const poolProbabilityList = useMemo(
-    () =>
-      defaultPool?.probabilities ||
-      Array.from({ length: TOKEN_LIST.length }, () => 0),
-    [poolName]
+  const defaultProbabilityList = useMemo(
+    () => defaultPool?.probabilities || [],
+    [defaultPool]
   );
-  const [probabilityList, setProbabilityList] =
-    React.useState<number[]>(poolProbabilityList);
+  const [probabilityList, setProbabilityList] = React.useState<number[]>(
+    defaultProbabilityList
+  );
   const { handleTxnResponse, api, contextHolder } = useTxnNotify();
   const {
     hash,
@@ -42,7 +43,9 @@ export default function SetUnitProbabilitySection({
     confirmError,
     isConfirmSuccess,
     isConfirmError,
-  } = useDrawingTxn('setAtomic');
+    confirmData,
+    isLoading,
+  } = useDrawingTxn('setUnitPool');
   console.log(getPool(poolName));
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
@@ -54,12 +57,7 @@ export default function SetUnitProbabilitySection({
       });
       return;
     }
-    add({
-      id: index.toString(),
-      name: poolName,
-      probabilities: probabilityList,
-    });
-    // submit?.({ args: [1, probabilityList] });
+    submit?.({ args: [probabilityList] });
   }, [poolName, add, probabilityList]);
   const handleUpdateProbability = useCallback(
     (index: number, value: number) => {
@@ -85,15 +83,33 @@ export default function SetUnitProbabilitySection({
       confirmError
     );
   }, [isConfirmError, isConfirmSuccess, confirmError]);
-  // useEffect(() => {
-  //   if (isConfirmSuccess) {
-  //     add({
-  //       id: index.toString(),
-  //       name: poolName,
-  //       probabilities: probabilityList,
-  //     });
-  //   }
-  // }, [isConfirmSuccess]);
+
+  useEffect(() => {
+    if (confirmData) {
+      const event = filterDrawingEvents('SetUnitPool', confirmData.logs);
+      console.log('confirmData', event);
+      if (event) {
+        add({
+          id: (event.args as SetUnitPoolParams).unitPoolID.toString(),
+          name: poolName,
+          probabilities: probabilityList,
+        });
+      }
+    }
+  }, [confirmData]);
+
+  useEffect(() => {
+    if (tokenList && probabilityList.length === 0) {
+      setProbabilityList(
+        (tokenList as bigint[]).map((i) => {
+          return 0;
+        })
+      );
+    }
+  }, [tokenList, probabilityList]);
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading]);
   return (
     <>
       {contextHolder}
@@ -106,11 +122,11 @@ export default function SetUnitProbabilitySection({
             <div className='h-[220px] w-[110px]'>
               <AddCard>Add Card</AddCard>
             </div>
-            {TOKEN_LIST.map((item, index) => {
+            {tokenList.map((item, index) => {
               return (
                 <div className='h-52 w-[110px]' key={index}>
                   <ProbabilityInputCard
-                    defaultValue={poolProbabilityList[index]}
+                    defaultValue={defaultProbabilityList[index]}
                     onChange={(v) => {
                       if (v || v === 0) {
                         console.log(v);
@@ -126,6 +142,7 @@ export default function SetUnitProbabilitySection({
           </div>
           <div className='w-[300px]'>
             <SpecificChainButton
+              isLoading={isLoading}
               chainId={43113}
               onClick={handleSetProbabilities}
             >

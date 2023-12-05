@@ -8,7 +8,7 @@ import {
   useWalletClient,
 } from 'wagmi';
 import VRFCOORDINATOR_V2_ABI from '@/abis/VRFCoordinatorV2.json';
-import { getRandomWordsFulfilledEventsByRequestIds } from '@/core/event';
+import { getRandomWordsFulfilledEventsByRequestIds } from '@/core/events/event';
 
 export function EventList() {
   const [questions, setQuestions] = useState<bigint[]>([]);

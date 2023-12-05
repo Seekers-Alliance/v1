@@ -1,24 +1,22 @@
-import EditPoolInput from '@/components/EditPoolInput';
 import { AddCard } from '@/components/AddCard';
 import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import ProbabilityInputCard from '@/components/ProbabilityInputCard';
-import { TOKEN_LIST } from '@/types';
-import { useUnitPoolStore } from '@/stores/unitPool';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import CountInputCard from '@/components/CountInputCard';
-import useDrawingWrite from '@/hooks/useDrawingWrite';
-import { useWaitForTransaction } from 'wagmi';
+import { useTokenList } from '@/hooks/useTokenList';
 
-export default function SetPoolCountSection() {
-  const defaultCountList = useMemo(
-    () => Array.from({ length: TOKEN_LIST.length }, () => BigInt(0)),
-    []
-  );
-  const [countList, setCountList] = React.useState<bigint[]>(defaultCountList);
+interface SetPoolCountSectionProps {
+  onLoading?: (isLoading: boolean) => void;
+}
+
+export default function SetPoolCountSection({
+  onLoading,
+}: SetPoolCountSectionProps) {
+  const { tokenList } = useTokenList();
+  const [countList, setCountList] = React.useState<bigint[]>([]);
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const handleUpdateCount = useCallback(
     (index: number, value: string) => {
@@ -41,12 +39,56 @@ export default function SetPoolCountSection() {
   );
   const handleSetCount = useCallback(() => {
     console.log('setCount');
+    console.log(countList);
+    submit?.({
+      //@ts-ignore
+      args: [countList],
+    });
+    console.log(countList);
+  }, [countList]);
 
-    // setDrawing({
-    //   args: [0, probabilityList],
-    // });
-    // console.log(probabilityList);
-  }, []);
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    isLoading,
+  } = useDrawingTxn('setTokenMaxAmount');
+
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.SUBMIT,
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.CONFIRM,
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+
+  useEffect(() => {
+    if (tokenList) {
+      setCountList(
+        (tokenList as bigint[]).map((i) => {
+          return BigInt(0);
+        })
+      );
+    }
+  }, [tokenList]);
+
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading]);
   return (
     <>
       {contextHolder}
@@ -56,11 +98,11 @@ export default function SetPoolCountSection() {
             <div className='h-[220px] w-[110px]'>
               <AddCard>Add NFT</AddCard>
             </div>
-            {TOKEN_LIST.map((item, index) => {
+            {tokenList.map((item, index) => {
               return (
                 <div className='h-[220px] w-[110px]' key={index}>
                   <CountInputCard
-                    defaultValue={countList[index].toString()}
+                    defaultValue={'0'}
                     onChange={(v) => {
                       if (v && v !== '') {
                         console.log(v);
@@ -75,7 +117,11 @@ export default function SetPoolCountSection() {
             })}
           </div>
           <div className='w-[300px]'>
-            <SpecificChainButton chainId={43113} onClick={handleSetCount}>
+            <SpecificChainButton
+              isLoading={isLoading}
+              chainId={43113}
+              onClick={handleSetCount}
+            >
               Set Mint Caps
             </SpecificChainButton>
           </div>

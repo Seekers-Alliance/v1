@@ -3,19 +3,21 @@ import { Descriptions, Steps } from 'antd';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { usePublicClient } from 'wagmi';
 import {
-  EventData,
   getRandomWordsFulfilledEventsByRequestIds,
   getRequestCompletedEventsByRequestIds,
-  RandomWordsFulfilledParams,
-  RequestCompletedParams,
   watchRandomWordsFulfilledEventsByRequestIds,
   watchRequestCompletedEventsByRequestIds,
-} from '@/core/event';
+} from '@/core/events/event';
 import { formatHex, getSupportedChainId } from '@/common';
 import { LinkOutlined } from '@ant-design/icons';
 import { useAddresses } from '@/hooks/useAddresses';
 import useWaitRequestSent from '@/hooks/useWaitRequestSent';
 import { listenEvent } from '@/utils/process';
+import {
+  EventData,
+  RandomWordsFulfilledParams,
+  RequestCompletedParams,
+} from '@/core/types';
 
 const TX_HASH =
   '0x30fa2954952af067542f4ccdb665770307edd34fe7e4c625ce08d8da28749557';

@@ -2,12 +2,9 @@ import { usePublicClient, useWaitForTransaction } from 'wagmi';
 import { Hash } from 'viem';
 import { getSupportedChainId } from '@/common';
 
-import {
-  EventData,
-  filterRequestSentEvents,
-  RequestSentParams,
-} from '@/core/event';
+import { filterRequestSentEvents } from '@/core/events/event';
 import { QueryResult } from '@/types';
+import { EventData, RequestSentParams } from '@/core/types';
 
 export default function useWaitRequestSent(
   hash: Hash

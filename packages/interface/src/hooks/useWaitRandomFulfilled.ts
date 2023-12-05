@@ -3,11 +3,8 @@ import { Hash } from 'viem';
 import { getSupportedChainId } from '@/common';
 import { useAddresses } from '@/hooks/useAddresses';
 import { useEffect, useRef } from 'react';
-import {
-  EventData,
-  RandomWordsFulfilledParams,
-  watchRandomWordsFulfilledEventsByRequestIds,
-} from '@/core/event';
+import { watchRandomWordsFulfilledEventsByRequestIds } from '@/core/events/event';
+import { EventData, RandomWordsFulfilledParams } from '@/core/types';
 
 export default function useWaitRandomFulfilled(
   requestId: bigint[],

@@ -1,4 +1,4 @@
-import { EventData } from '@/core/event';
+import { EventData } from '@/core/types';
 
 interface ListenParams<T> {
   getFn: () => Promise<EventData<T>[]>;
