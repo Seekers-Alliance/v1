@@ -24,6 +24,7 @@ export default function useDrawingRead(
     ...drawingConfig,
     // @ts-ignore
     functionName: fn,
+    chainId:43113,
     args: args,
     watch: watch,
   });
