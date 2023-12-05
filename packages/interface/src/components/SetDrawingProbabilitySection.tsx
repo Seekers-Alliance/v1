@@ -13,10 +13,12 @@ import { SetDrawingPoolParams } from '@/core/types';
 
 interface SetDrawingProbabilitySectionProps {
   poolName: string;
+  onLoading?: (isLoading: boolean) => void;
 }
 
 export default function SetDrawingProbabilitySection({
   poolName,
+  onLoading,
 }: SetDrawingProbabilitySectionProps) {
   const { getPool, add } = useDrawingPoolStore();
   const defaultPool = useMemo(() => getPool(poolName), [poolName]);
@@ -57,6 +59,7 @@ export default function SetDrawingProbabilitySection({
     isConfirmSuccess,
     isConfirmError,
     confirmData,
+    isLoading,
   } = useDrawingTxn('setDrawingPool');
   console.log(getPool(poolName));
   const handleUpdateProbability = useCallback(
@@ -96,6 +99,9 @@ export default function SetDrawingProbabilitySection({
       }
     }
   }, [confirmData]);
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading]);
   return (
     <>
       {contextHolder}
@@ -132,6 +138,7 @@ export default function SetDrawingProbabilitySection({
           </div>
           <div className='w-[300px]'>
             <SpecificChainButton
+              isLoading={isLoading}
               chainId={43113}
               onClick={handleSetProbabilities}
             >

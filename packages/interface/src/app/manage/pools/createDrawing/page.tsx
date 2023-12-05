@@ -1,7 +1,7 @@
 'use client';
 import { Layout } from 'antd';
 import { Primary2Button } from '@/components/Button';
-import React, { useEffect } from 'react';
+import React, { useCallback, useEffect } from 'react';
 import SetDrawingProbabilitySection from '@/components/SetDrawingProbabilitySection';
 import { useRouter } from 'next/navigation';
 import { PoolProcessStatus } from '@/types';
@@ -12,6 +12,10 @@ const { Footer } = Layout;
 export default function Page() {
   const { status, updateStatus } = usePoolProcessStatusStore();
   const router = useRouter();
+  const [isLoading, setIsLoading] = React.useState(false);
+  const handleLoading = useCallback((l: boolean) => {
+    setIsLoading(l);
+  }, []);
   const handleNextStep = () => {
     router.push('/manage/pools/final');
   };
@@ -31,7 +35,7 @@ export default function Page() {
         {poolNames.slice(0, poolAmount).map((poolName, index) => {
           return (
             <SetDrawingProbabilitySection
-              index={index}
+              onLoading={handleLoading}
               poolName={poolName}
               key={index}
             />
@@ -39,7 +43,9 @@ export default function Page() {
         })}
       </div>
       <div className='mt-[23px] w-[300px]'>
-        <Primary2Button onClick={handleNextStep}>Next Step</Primary2Button>
+        <Primary2Button loading={isLoading} onClick={handleNextStep}>
+          Next Step
+        </Primary2Button>
       </div>
     </div>
   );

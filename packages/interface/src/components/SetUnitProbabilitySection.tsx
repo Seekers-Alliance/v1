@@ -13,13 +13,12 @@ import { filterDrawingEvents } from '@/core/events/drawing';
 import { SetUnitPoolParams } from '@/core/types';
 
 interface SetUnitProbabilitySectionProps {
-  // TODO: fake index to be replaced
-  index: number;
   poolName: string;
+  onLoading?: (isLoading: boolean) => void;
 }
 
 export default function SetUnitProbabilitySection({
-  index,
+  onLoading,
   poolName,
 }: SetUnitProbabilitySectionProps) {
   const { tokenList } = useTokenList();
@@ -45,6 +44,7 @@ export default function SetUnitProbabilitySection({
     isConfirmSuccess,
     isConfirmError,
     confirmData,
+    isLoading,
   } = useDrawingTxn('setUnitPool');
   console.log(getPool(poolName));
   const handleSetProbabilities = useCallback(() => {
@@ -107,6 +107,9 @@ export default function SetUnitProbabilitySection({
       );
     }
   }, [tokenList, probabilityList]);
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading]);
   return (
     <>
       {contextHolder}
@@ -139,6 +142,7 @@ export default function SetUnitProbabilitySection({
           </div>
           <div className='w-[300px]'>
             <SpecificChainButton
+              isLoading={isLoading}
               chainId={43113}
               onClick={handleSetProbabilities}
             >

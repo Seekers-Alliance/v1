@@ -84,12 +84,14 @@ export function SelectingButton({
 }
 
 interface SpecificChainButtonProps {
+  isLoading?: boolean;
   chainId: number;
   onClick: () => void;
   children: React.ReactNode;
 }
 
 export function SpecificChainButton({
+  isLoading,
   chainId,
   onClick,
   children,
@@ -116,9 +118,12 @@ export function SpecificChainButton({
     console.log(connector);
     connect({ connector: connector });
   }, [connect, isConnected]);
+  console.log(`isLoading ${isLoading}`);
   return isConnected ? (
     isCorrectChain ? (
-      <Primary2Button onClick={onClick}>{children}</Primary2Button>
+      <Primary2Button loading={isLoading} onClick={onClick}>
+        {children}
+      </Primary2Button>
     ) : (
       <Primary2Button onClick={handleChangeChain}>
         Switch Network

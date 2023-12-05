@@ -11,7 +11,7 @@ export default function Page() {
   const { status, updateStatus } = usePoolProcessStatusStore();
   const router = useRouter();
   const handleNextStep = () => {
-    router.push('/manage/pools/final');
+    router.push('/');
   };
   useEffect(() => {
     if (status !== PoolProcessStatus.Done) {
@@ -24,7 +24,7 @@ export default function Page() {
         <ProbabilityTree />
       </div>
       <div className='mt-[23px] w-[300px]'>
-        <Primary2Button>Finish Setup</Primary2Button>
+        <Primary2Button onClick={handleNextStep}>Finish Setup</Primary2Button>
       </div>
     </div>
   );

@@ -8,7 +8,13 @@ import useDrawingTxn from '@/hooks/useDrawingTxn';
 import CountInputCard from '@/components/CountInputCard';
 import { useTokenList } from '@/hooks/useTokenList';
 
-export default function SetPoolCountSection() {
+interface SetPoolCountSectionProps {
+  onLoading?: (isLoading: boolean) => void;
+}
+
+export default function SetPoolCountSection({
+  onLoading,
+}: SetPoolCountSectionProps) {
   const { tokenList } = useTokenList();
   const [countList, setCountList] = React.useState<bigint[]>([]);
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
@@ -50,6 +56,7 @@ export default function SetPoolCountSection() {
     confirmError,
     isConfirmSuccess,
     isConfirmError,
+    isLoading,
   } = useDrawingTxn('setTokenMaxAmount');
 
   useEffect(() => {
@@ -78,6 +85,10 @@ export default function SetPoolCountSection() {
       );
     }
   }, [tokenList]);
+
+  useEffect(() => {
+    onLoading?.(isLoading);
+  }, [isLoading]);
   return (
     <>
       {contextHolder}
@@ -106,7 +117,11 @@ export default function SetPoolCountSection() {
             })}
           </div>
           <div className='w-[300px]'>
-            <SpecificChainButton chainId={43113} onClick={handleSetCount}>
+            <SpecificChainButton
+              isLoading={isLoading}
+              chainId={43113}
+              onClick={handleSetCount}
+            >
               Set Mint Caps
             </SpecificChainButton>
           </div>
