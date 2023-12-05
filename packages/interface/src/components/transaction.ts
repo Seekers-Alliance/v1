@@ -1,11 +1,11 @@
 const SUBMITTED_TITLE = 'Transaction submitted';
-const SUBMITTED_DESCRIPTION = 'Your transaction has been submitted';
+const SUBMITTED_DESCRIPTION = 'Your transaction submission succeeded';
 const CONFIRMED_TITLE = 'Transaction confirmed';
-const CONFIRMED_DESCRIPTION = 'Your transaction has been confirmed';
-const SUBMIT_FAILED_TITLE = 'Transaction failed to submit';
-const SUBMIT_FAILED_DESCRIPTION = 'Your transaction failed to submit';
-const CONFIRM_FAILED_TITLE = 'Transaction failed to confirm';
-const CONFIRM_FAILED_DESCRIPTION = 'Your transaction failed to confirm';
+const CONFIRMED_DESCRIPTION = 'Your transaction confirmation succeeded';
+const SUBMIT_FAILED_TITLE = 'Transaction submission failed';
+const SUBMIT_FAILED_DESCRIPTION = 'Your transaction submission failed';
+const CONFIRM_FAILED_TITLE = 'Transaction confirmation failed';
+const CONFIRM_FAILED_DESCRIPTION = 'Your transaction confirmation failed';
 
 export enum TransactionStatus {
   SUBMITTED,
