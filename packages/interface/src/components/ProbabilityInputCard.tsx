@@ -27,12 +27,12 @@ export default function ProbabilityInputCard({
         {children}
         <div className='flex h-[40px] w-[100%] items-center border-t-[1px] border-solid border-[#374151]'>
           <div className='inline-flex items-center justify-between p-2'>
-            <div className='text-white'>%</div>
             <InputNumber
               className='w-[100%] border-0 bg-[#111827] text-white'
               onChange={onChange}
               defaultValue={defaultValue || 0}
             />
+            <div className='text-white'>%</div>
           </div>
         </div>
       </div>
