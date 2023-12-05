@@ -15,6 +15,7 @@ export default function useDrawingTxn(fn: string) {
     error: submitError,
   } = useDrawingWrite(fn);
   const {
+    data: confirmData,
     isError: isConfirmError,
     error: confirmError,
     isSuccess: isConfirmSuccess,
@@ -35,6 +36,7 @@ export default function useDrawingTxn(fn: string) {
     isConfirmError,
     confirmError,
     isConfirmSuccess,
+    confirmData,
     hash,
   };
 }
