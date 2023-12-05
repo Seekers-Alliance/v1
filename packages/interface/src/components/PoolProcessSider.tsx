@@ -10,7 +10,7 @@ export default function PoolProcessSider() {
       title: 'TokenID Pool',
       label: (
         <Link href='/manage/pools/count'>
-          <div className='text-white'>TokenID Pool</div>
+          <div className='text-white'>TokenID Pools</div>
         </Link>
       ),
     },
@@ -28,7 +28,7 @@ export default function PoolProcessSider() {
       title: 'Drawing Pool',
       label: (
         <Link href='/manage/pools/createDrawing'>
-          <div className='text-white'>Drawing Pool</div>
+          <div className='text-white'>Drawing Pools</div>
         </Link>
       ),
     },
