@@ -1,5 +1,5 @@
 'use client';
-import ConnectWalletButton from '@/components/ConnectWalletButton';
+import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import { useCallback } from 'react';
 import SimpleNavbar from '@/components/SimpleNavbar';
 import { useRouter } from 'next/navigation';

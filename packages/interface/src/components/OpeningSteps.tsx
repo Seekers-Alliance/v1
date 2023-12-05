@@ -42,7 +42,7 @@ export function OpeningSteps() {
     error,
     data: requestSentEvent,
   } = useWaitRequestSent(TX_HASH);
-  const { vrfAddress, fomoAddress } = useAddresses();
+  const { vrfAddress, drawingAddress } = useAddresses();
   const getCurrent = useCallback(() => {
     switch (status) {
       case OpeningStatus.START:
@@ -107,26 +107,26 @@ export function OpeningSteps() {
         args: {
           requestId: [requestId],
         },
-        address: fomoAddress,
+        address: drawingAddress,
       });
       console.log('getFnForCompletedEvent', d);
       return d;
     }
     return [];
-  }, [client, fomoAddress, requestId, blockNumberForDrew]);
+  }, [client, drawingAddress, requestId, blockNumberForDrew]);
 
   const waitFnForCompletedEvent = useCallback(
     (listener: (e: EventData<RequestCompletedParams>) => void) => {
       if (requestId && blockNumberForDrew) {
         return watchRequestCompletedEventsByRequestIds(
           client,
-          fomoAddress,
+          drawingAddress,
           [requestId],
           listener
         );
       }
     },
-    [client, fomoAddress, requestId]
+    [client, drawingAddress, requestId]
   );
 
   const handleFulfilled = (hash: string) => {
@@ -215,9 +215,7 @@ export function OpeningSteps() {
                 <Descriptions.Item label='RequestId'>
                   <div className='flex'>
                     <span>
-                      {requestId
-                        ? requestId.toString()
-                        : 'wait for request'}
+                      {requestId ? requestId.toString() : 'wait for request'}
                     </span>
                     <a href={'https://vrf.chain.link/arbitrum/127'}>
                       <LinkOutlined />
