@@ -30,11 +30,13 @@ export default function Page() {
       handleAfterAnimation();
     }, 3000);
   }, []);
-
+  const animationUrl=`https://ipfs.io/ipfs/Qmb1Sv1mPHagk59BVDu8jacQ6pF7ompU2naPbWgws8ff1V`;
   return (
     <main className='flex min-h-screen bg-black bg-[url("/repository.png")]'>
-      <div className='fixed left-[457px] top-[108px]'>
-        <img className='h-[526px] w-[526px]' src='/mock.gif' alt='mock' />
+      <div className='fixed left-[457px] top-[120px]'>
+        <video width={526} height={526} autoPlay muted playsInline loop>
+          <source src={animationUrl} />
+        </video>
       </div>
     </main>
   );
