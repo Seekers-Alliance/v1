@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 
 export default function Page() {
-  const networkList = ['AVALANCHE', 'ETHEREUM', 'ARBITRUM'];
+  const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
   const tokenList = ['USDT', 'ETH', 'AVAX'];
   const amountList = [1, 5, 10, 15, 20, 25];
   const [selectedNetwork, setSelectedNetwork] = useState(0);
@@ -94,10 +94,10 @@ function getChainId(network: string): number {
       chainId = 43113;
       break;
     case 'ETHEREUM':
-      chainId = 5;
+      chainId = 11155111;
       break;
-    case 'ARBITRUM':
-      chainId = 421613;
+    case 'OPTIMISM':
+      chainId = 420;
       break;
   }
   return chainId;
