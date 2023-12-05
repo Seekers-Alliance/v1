@@ -4,6 +4,10 @@ import { PrimaryButton, SelectingButton } from '@/components/Button';
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
 import { useRouter } from 'next/navigation';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
+import useTxnNotify from "@/hooks/useTxnNotify";
+import {TransactionAction} from "@/components/transaction";
+import useMarketplaceTxn from "@/hooks/useMarketplaceTxn";
+import {useAddresses} from "@/hooks/useAddresses";
 
 export default function Page() {
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
@@ -74,7 +78,7 @@ export default function Page() {
       <div className='fixed left-[767px] top-[530px]'>
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
-            <BuyStatusButton network={networkList[selectedNetwork]} />
+            <BuyStatusButton network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} />
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
@@ -110,30 +114,47 @@ enum BuyStatus {
 }
 
 interface BuyStatusButtonProps {
+  amount: number;
   network: string;
 }
 
-function BuyStatusButton({ network }: BuyStatusButtonProps) {
+function BuyStatusButton({ network,amount }: BuyStatusButtonProps) {
+  const {marketplaceReceiverAddress}=useAddresses()
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const router = useRouter();
+
+  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
+
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    isLoading,
+      confirmData
+  } = useMarketplaceTxn('purchasePackNative',getChainId(network));
   const handleChainChanged = useCallback(
-    (network: string) => {
-      let chainId = getChainId(network);
-      if (chainId === chain?.id) {
-        console.log('same chain');
-        return;
-      }
-      console.log(chainId);
-      switchNetwork?.(chainId);
-    },
-    [switchNetwork, chain]
+      (network: string) => {
+        let chainId = getChainId(network);
+        if (chainId === chain?.id) {
+          console.log('same chain');
+          return;
+        }
+        console.log(chainId);
+        switchNetwork?.(chainId);
+      },
+      [switchNetwork, chain]
   );
   const handleBuy = useCallback(() => {
     if (status === BuyStatus.Buy) {
-      setStatus(BuyStatus.AfterBuy);
+      submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,1,amount,1]});
       return;
     }
   }, [status]);
@@ -144,6 +165,30 @@ function BuyStatusButton({ network }: BuyStatusButtonProps) {
       return;
     }
   }, [status]);
+  useEffect(() => {
+    handleTxnResponse(
+        TransactionAction.SUBMIT,
+        isSubmitError,
+        isSubmitSuccess,
+        submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+        TransactionAction.CONFIRM,
+        isConfirmError,
+        isConfirmSuccess,
+        confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+
+  useEffect(() => {
+    console.log(`confirmData`,confirmData)
+    if (confirmData){
+      console.log(`confirmData`,confirmData)
+        setStatus(BuyStatus.AfterBuy);
+    }
+  }, [confirmData]);
 
   useEffect(() => {
     if (status === BuyStatus.BeforeBuy) {
@@ -165,10 +210,8 @@ function BuyStatusButton({ network }: BuyStatusButtonProps) {
         </ConnectWalletButton>
       );
     case BuyStatus.Buy:
-      return <PrimaryButton onClick={handleBuy}>BUY</PrimaryButton>;
+      return <PrimaryButton loading={isLoading} onClick={handleBuy}>BUY</PrimaryButton>;
     case BuyStatus.AfterBuy:
       return <PrimaryButton onClick={handleAfterBuy}>OPEN PACKS</PrimaryButton>;
-    default:
-      return <PrimaryButton>BUY</PrimaryButton>;
   }
 }
