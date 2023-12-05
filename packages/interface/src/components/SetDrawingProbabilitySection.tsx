@@ -5,19 +5,17 @@ import React, { useCallback, useEffect, useMemo } from 'react';
 import ProbabilityInputCard from '@/components/ProbabilityInputCard';
 import { useUnitPoolStore } from '@/stores/unitPool';
 import { useDrawingPoolStore } from '@/stores/drawingPool';
-import useDrawingWrite from '@/hooks/useDrawingWrite';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import { TransactionAction } from '@/components/transaction';
-import { useWaitForTransaction } from 'wagmi';
+import useDrawingTxn from '@/hooks/useDrawingTxn';
+import { filterDrawingEvents } from '@/core/events/drawing';
+import { SetDrawingPoolParams } from '@/core/types';
 
 interface SetDrawingProbabilitySectionProps {
-  // TODO: fake index to be replaced
-  index: number;
   poolName: string;
 }
 
 export default function SetDrawingProbabilitySection({
-  index,
   poolName,
 }: SetDrawingProbabilitySectionProps) {
   const { getPool, add } = useDrawingPoolStore();
@@ -43,31 +41,24 @@ export default function SetDrawingProbabilitySection({
       });
       return;
     }
-    add({
-      id: index.toString(),
-      name: poolName,
-      probabilities: probabilityList,
-    });
-    // setDrawing({
-    //   args: [0, probabilityList],
-    // });
-    // console.log(probabilityList);
+    const unitPoolIds = unitPools.list.map((name) =>
+      BigInt(getPool(name)?.id || 0)
+    );
+    //@ts-ignore
+    submit?.({ args: [unitPoolIds, probabilityList] });
   }, [poolId, add, probabilityList]);
   const {
-    data: setDrawingData,
-    write: setDrawing,
-    isError: isSetDrawingError,
-    isSuccess: isSetDrawingSuccess,
-    error: setDrawingError,
-  } = useDrawingWrite('setDrawing');
-  const {
-    isError: isSetDrawingTxnError,
-    error: setDrawingTxnError,
-    isSuccess: isSetDrawingTxnSuccess,
-  } = useWaitForTransaction({
-    hash: setDrawingData?.hash,
-    chainId: 43113,
-  });
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    confirmData,
+  } = useDrawingTxn('setDrawingPool');
+  console.log(getPool(poolName));
   const handleUpdateProbability = useCallback(
     (index: number, value: number) => {
       probabilityList[index] = value;
@@ -75,37 +66,36 @@ export default function SetDrawingProbabilitySection({
     },
     [probabilityList]
   );
+
   useEffect(() => {
     handleTxnResponse(
       TransactionAction.SUBMIT,
-      isSetDrawingError,
-      isSetDrawingSuccess,
-      setDrawingError
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
     );
-  }, [isSetDrawingError, isSetDrawingSuccess, setDrawingError]);
+  }, [isSubmitError, isSubmitSuccess, submitError]);
   useEffect(() => {
     handleTxnResponse(
       TransactionAction.CONFIRM,
-      isSetDrawingError,
-      isSetDrawingSuccess,
-      setDrawingError
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
     );
-  }, [
-    isSetDrawingTxnError,
-    isSetDrawingTxnSuccess,
-    setDrawingTxnError,
-    poolId,
-    probabilityList,
-  ]);
-
-  // useEffect(() => {
-  //   if (isSetDrawingTxnSuccess) {
-  //     add({
-  //       name: poolId,
-  //       probabilities: probabilityList,
-  //     });
-  //   }
-  // }, [isSetDrawingTxnSuccess]);
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+  useEffect(() => {
+    if (confirmData) {
+      const event = filterDrawingEvents('SetDrawingPool', confirmData.logs);
+      console.log('confirmData', event);
+      if (event) {
+        add({
+          id: (event.args as SetDrawingPoolParams).drawingPoolID.toString(),
+          name: poolName,
+          probabilities: probabilityList,
+        });
+      }
+    }
+  }, [confirmData]);
   return (
     <>
       {contextHolder}

@@ -9,6 +9,8 @@ import useTxnNotify from '@/hooks/useTxnNotify';
 import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { useTokenList } from '@/hooks/useTokenList';
+import { filterDrawingEvents } from '@/core/events/drawing';
+import { SetUnitPoolParams } from '@/core/types';
 
 interface SetUnitProbabilitySectionProps {
   // TODO: fake index to be replaced
@@ -42,7 +44,8 @@ export default function SetUnitProbabilitySection({
     confirmError,
     isConfirmSuccess,
     isConfirmError,
-  } = useDrawingTxn('setAtomic');
+    confirmData,
+  } = useDrawingTxn('setUnitPool');
   console.log(getPool(poolName));
   const handleSetProbabilities = useCallback(() => {
     console.log('setProbabilities');
@@ -54,12 +57,7 @@ export default function SetUnitProbabilitySection({
       });
       return;
     }
-    add({
-      id: index.toString(),
-      name: poolName,
-      probabilities: probabilityList,
-    });
-    // submit?.({ args: [1, probabilityList] });
+    submit?.({ args: [probabilityList] });
   }, [poolName, add, probabilityList]);
   const handleUpdateProbability = useCallback(
     (index: number, value: number) => {
@@ -85,15 +83,20 @@ export default function SetUnitProbabilitySection({
       confirmError
     );
   }, [isConfirmError, isConfirmSuccess, confirmError]);
-  // useEffect(() => {
-  //   if (isConfirmSuccess) {
-  //     add({
-  //       id: index.toString(),
-  //       name: poolName,
-  //       probabilities: probabilityList,
-  //     });
-  //   }
-  // }, [isConfirmSuccess]);
+
+  useEffect(() => {
+    if (confirmData) {
+      const event = filterDrawingEvents('SetUnitPool', confirmData.logs);
+      console.log('confirmData', event);
+      if (event) {
+        add({
+          id: (event.args as SetUnitPoolParams).unitPoolID.toString(),
+          name: poolName,
+          probabilities: probabilityList,
+        });
+      }
+    }
+  }, [confirmData]);
 
   useEffect(() => {
     if (tokenList && probabilityList.length === 0) {

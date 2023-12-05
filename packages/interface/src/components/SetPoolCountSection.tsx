@@ -1,18 +1,11 @@
-import EditPoolInput from '@/components/EditPoolInput';
 import { AddCard } from '@/components/AddCard';
 import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
-import ProbabilityInputCard from '@/components/ProbabilityInputCard';
-import { TOKEN_LIST } from '@/types';
-import { useUnitPoolStore } from '@/stores/unitPool';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import CountInputCard from '@/components/CountInputCard';
-import useDrawingWrite from '@/hooks/useDrawingWrite';
-import { useContractReads, useWaitForTransaction } from 'wagmi';
-import useDrawingRead from '@/hooks/useDrawingRead';
 import { useTokenList } from '@/hooks/useTokenList';
 
 export default function SetPoolCountSection() {
@@ -40,12 +33,41 @@ export default function SetPoolCountSection() {
   );
   const handleSetCount = useCallback(() => {
     console.log('setCount');
+    console.log(countList);
+    submit?.({
+      //@ts-ignore
+      args: [countList],
+    });
+    console.log(countList);
+  }, [countList]);
 
-    // setDrawing({
-    //   args: [0, probabilityList],
-    // });
-    // console.log(probabilityList);
-  }, []);
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+  } = useDrawingTxn('setTokenMaxAmount');
+
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.SUBMIT,
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.CONFIRM,
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
 
   useEffect(() => {
     if (tokenList) {
@@ -55,7 +77,7 @@ export default function SetPoolCountSection() {
         })
       );
     }
-  }, []);
+  }, [tokenList]);
   return (
     <>
       {contextHolder}
