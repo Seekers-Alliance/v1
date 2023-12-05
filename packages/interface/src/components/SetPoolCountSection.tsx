@@ -11,14 +11,13 @@ import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import CountInputCard from '@/components/CountInputCard';
 import useDrawingWrite from '@/hooks/useDrawingWrite';
-import { useWaitForTransaction } from 'wagmi';
+import { useContractReads, useWaitForTransaction } from 'wagmi';
+import useDrawingRead from '@/hooks/useDrawingRead';
+import { useTokenList } from '@/hooks/useTokenList';
 
 export default function SetPoolCountSection() {
-  const defaultCountList = useMemo(
-    () => Array.from({ length: TOKEN_LIST.length }, () => BigInt(0)),
-    []
-  );
-  const [countList, setCountList] = React.useState<bigint[]>(defaultCountList);
+  const { tokenList } = useTokenList();
+  const [countList, setCountList] = React.useState<bigint[]>([]);
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const handleUpdateCount = useCallback(
     (index: number, value: string) => {
@@ -47,6 +46,16 @@ export default function SetPoolCountSection() {
     // });
     // console.log(probabilityList);
   }, []);
+
+  useEffect(() => {
+    if (tokenList) {
+      setCountList(
+        (tokenList as bigint[]).map((i) => {
+          return BigInt(0);
+        })
+      );
+    }
+  }, []);
   return (
     <>
       {contextHolder}
@@ -56,11 +65,11 @@ export default function SetPoolCountSection() {
             <div className='h-[220px] w-[110px]'>
               <AddCard>Add NFT</AddCard>
             </div>
-            {TOKEN_LIST.map((item, index) => {
+            {tokenList.map((item, index) => {
               return (
                 <div className='h-[220px] w-[110px]' key={index}>
                   <CountInputCard
-                    defaultValue={countList[index].toString()}
+                    defaultValue={'0'}
                     onChange={(v) => {
                       if (v && v !== '') {
                         console.log(v);

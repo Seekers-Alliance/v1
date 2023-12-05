@@ -6,23 +6,26 @@ import DRAWING_ABI from '@/abis/Drawing.json';
 
 export default function useDrawingRead(
   fn: string,
-  args: any
+  args: any = [],
+  watch = true
 ): QueryResult<DrawingRead> {
   const config = useDrawingConfig();
   const drawingConfig = {
     address: config.address,
-    // abi:parseAbi([
-    //     'function ids(uint256 _index) returns (uint256)',
-    // ]),
-    abi: DRAWING_ABI,
+    abi: parseAbi([
+      'function ids(uint256 _index) returns (uint256)',
+      'function getTokenPoolInfo() returns(uint256[] memory)',
+    ]),
+    // abi: DRAWING_ABI,
   };
-  console.log(args);
+  console.log(fn, drawingConfig, args);
   const read = useContractRead({
-    ...config,
+    // ...config,
+    ...drawingConfig,
+    // @ts-ignore
     functionName: fn,
     args: args,
-    chainId: config.chainId,
-    watch: true,
+    watch: watch,
   });
   console.log(read);
   if (!read.data) {
@@ -35,12 +38,14 @@ export default function useDrawingRead(
   };
 }
 
-type DrawingRead = BigInt & any;
+type DrawingRead = bigint & bigint[] & any;
 
 function mappingResult(fn: string, result: any): DrawingRead {
   switch (fn) {
     case 'ids':
       return BigInt(result);
+    case 'getTokenPoolInfo':
+      return result as bigint[];
     default:
       return result;
   }

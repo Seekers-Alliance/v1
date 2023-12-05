@@ -3,12 +3,12 @@ import { AddCard } from '@/components/AddCard';
 import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import ProbabilityInputCard from '@/components/ProbabilityInputCard';
-import { TOKEN_LIST } from '@/types';
 import { useUnitPoolStore } from '@/stores/unitPool';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import NFTProfile from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
+import { useTokenList } from '@/hooks/useTokenList';
 
 interface SetUnitProbabilitySectionProps {
   // TODO: fake index to be replaced
@@ -20,18 +20,18 @@ export default function SetUnitProbabilitySection({
   index,
   poolName,
 }: SetUnitProbabilitySectionProps) {
+  const { tokenList } = useTokenList();
   const { getPool, add } = useUnitPoolStore();
   const defaultPool = useMemo(() => getPool(poolName), [poolName]);
   const [poolId, setPoolId] = React.useState<bigint | null>(null);
 
-  const poolProbabilityList = useMemo(
-    () =>
-      defaultPool?.probabilities ||
-      Array.from({ length: TOKEN_LIST.length }, () => 0),
-    [poolName]
+  const defaultProbabilityList = useMemo(
+    () => defaultPool?.probabilities || [],
+    [defaultPool]
   );
-  const [probabilityList, setProbabilityList] =
-    React.useState<number[]>(poolProbabilityList);
+  const [probabilityList, setProbabilityList] = React.useState<number[]>(
+    defaultProbabilityList
+  );
   const { handleTxnResponse, api, contextHolder } = useTxnNotify();
   const {
     hash,
@@ -94,6 +94,16 @@ export default function SetUnitProbabilitySection({
   //     });
   //   }
   // }, [isConfirmSuccess]);
+
+  useEffect(() => {
+    if (tokenList && probabilityList.length === 0) {
+      setProbabilityList(
+        (tokenList as bigint[]).map((i) => {
+          return 0;
+        })
+      );
+    }
+  }, [tokenList, probabilityList]);
   return (
     <>
       {contextHolder}
@@ -106,11 +116,11 @@ export default function SetUnitProbabilitySection({
             <div className='h-[220px] w-[110px]'>
               <AddCard>Add Card</AddCard>
             </div>
-            {TOKEN_LIST.map((item, index) => {
+            {tokenList.map((item, index) => {
               return (
                 <div className='h-52 w-[110px]' key={index}>
                   <ProbabilityInputCard
-                    defaultValue={poolProbabilityList[index]}
+                    defaultValue={defaultProbabilityList[index]}
                     onChange={(v) => {
                       if (v || v === 0) {
                         console.log(v);
