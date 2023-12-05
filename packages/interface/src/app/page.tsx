@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation';
 export default function Home() {
   const router = useRouter();
   const handleBuyPack = () => {
-    router.push('/open-pack/buy');
+    router.push('/open-pack/start');
   };
   const handleSetupDrawingPool = () => {
     router.push('/manage/');
@@ -15,7 +15,7 @@ export default function Home() {
       <div className='flex flex-col items-center gap-2'>
         <div className='h-[50px] w-[500px]'>
           <PrimaryButton onClick={handleBuyPack}>
-            User Story - Buy Pack
+            User Story - Buy Packs
           </PrimaryButton>
         </div>
         <div className='h-[50px] w-[500px]'>
