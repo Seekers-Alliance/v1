@@ -43,7 +43,7 @@ export default function useDrawingRead(
   };
 }
 
-type DrawingRead = bigint & bigint[] &DrawingPoolInfo & any;
+type DrawingRead = bigint & bigint[] & Number & DrawingPoolInfo & any;
 
 function mappingResult(fn: string, result: any): DrawingRead {
   switch (fn) {
@@ -52,7 +52,7 @@ function mappingResult(fn: string, result: any): DrawingRead {
     case 'getTokenPoolInfo':
       return result as bigint[];
     case 'usersDrawable':
-        return BigInt(result)
+        return Number(result)
     case 'getPoolInfo':
         return {
             units: result[0] as bigint[],
