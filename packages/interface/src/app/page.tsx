@@ -15,12 +15,12 @@ export default function Home() {
       <div className='flex flex-col items-center gap-2'>
         <div className='h-[50px] w-[500px]'>
           <PrimaryButton onClick={handleBuyPack}>
-            User Story - Buy Packs
+            PLAYERS - BUY PACKS
           </PrimaryButton>
         </div>
         <div className='h-[50px] w-[500px]'>
           <PrimaryButton onClick={handleSetupDrawingPool}>
-            Manager Story - Setup Drawing Pool
+            GAME OWNER - SETUP DRAWING POOLS
           </PrimaryButton>
         </div>
       </div>

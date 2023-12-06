@@ -139,7 +139,7 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
         </>
       );
     case OpenStatus.AfterOpen:
-      return <PrimaryButton onClick={handleAfterOpening}>OPEN!</PrimaryButton>;
+      return <PrimaryButton onClick={handleAfterOpening}>SEE CARDS</PrimaryButton>;
   }
 }
 
