@@ -1,5 +1,5 @@
 'use client';
-import { useCallback, useEffect, useState } from 'react';
+import {useCallback, useEffect, useMemo, useState} from 'react';
 import { PrimaryButton, SelectingButton } from '@/components/Button';
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
 import { useRouter } from 'next/navigation';
@@ -9,14 +9,26 @@ import {TransactionAction} from "@/components/transaction";
 import useMarketplaceTxn from "@/hooks/useMarketplaceTxn";
 import {useAddresses} from "@/hooks/useAddresses";
 import useMarketplaceRead from "@/hooks/useMarketplaceRead";
+import usePackPrice from "@/hooks/usePackPrice";
+import {formatAmount} from "@/common";
 
 export default function Page() {
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
-  const tokenList = ['USDT', 'ETH', 'AVAX'];
   const amountList = [1, 5, 10, 15, 20, 25];
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedToken, setSelectedToken] = useState(0);
   const [selectedAmount, setSelectedAmount] = useState(0);
+  const {data:packPrice,error}=usePackPrice(0,getChainId(networkList[selectedNetwork]))
+  console.log(`packPrice`,packPrice)
+  console.log(`packPrice error`,error)
+  const nativeCoin=useMemo(()=>{
+    switch (networkList[selectedNetwork]) {
+      case 'AVALANCHE':
+        return 'AVAX'
+      default:
+        return 'ETH'
+    }
+  },[selectedNetwork])
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -46,18 +58,20 @@ export default function Page() {
       </div>
       <div className='fixed left-[767px] top-[369px]'>
         <div className='flex h-[60px] w-[465px] flex-row gap-4'>
-          {tokenList.map((item, index) => {
-            const selected = index === selectedToken;
-            return (
               <SelectingButton
-                key={index}
-                selected={selected}
-                onClick={handleSelectToken(index)}
+                selected={selectedToken===0}
+                onClick={handleSelectToken(0)}
               >
-                {item}
+                <span>{formatAmount(packPrice?.native,18,4)+" "}</span>
+                {nativeCoin}
               </SelectingButton>
-            );
-          })}
+          <SelectingButton
+              selected={selectedToken===1}
+              onClick={handleSelectToken(1)}
+          >
+            <span>{formatAmount(packPrice?.usdt,6,4)+" "}</span>
+            USDT
+          </SelectingButton>
         </div>
       </div>
       <div className='fixed left-[767px] top-[451px]'>
