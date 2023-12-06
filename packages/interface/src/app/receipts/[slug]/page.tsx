@@ -27,9 +27,12 @@ export default function Page({ params }: { params: { slug: string } }) {
   const toVRF = useCallback(() => {
     router.push('https://vrf.chain.link/fuji/822');
   }, [router]);
-  if (error) {
-    return notFound();
-  }
+
+  useEffect(() => {
+    if (error) {
+      router.push('/_not-found');
+    }
+  }, [error]);
 
   useEffect(() => {
     if (data) {
