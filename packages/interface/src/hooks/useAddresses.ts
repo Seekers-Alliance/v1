@@ -16,6 +16,6 @@ export function useAddresses(): Addresses {
     vrfAddress: '0x2eD832Ba664535e5886b75D64C46EB9a228C2610' as Address,
     vrfManagerAddress: '0xd3f8FFdA0fd9A2eB5D3acF7c5E9ae4334f0A2Add' as Address,
     marketplaceSenderAddress: '0x19121241f9F3Da2813b5B8C0E2Bc5aEA9Ec17aF5' as Address,
-    marketplaceReceiverAddress:'0x26923D2f7C43F580EE624668716e694239195001' as Address,
+    marketplaceReceiverAddress:'0x1d163C7Fb8925a88EB0AC4042868F8248d60a107' as Address,
   };
 }
