@@ -3,6 +3,7 @@ import { useContractRead, useContractReads, useContractWrite } from 'wagmi';
 import { parseAbi } from 'viem';
 import { QueryResult } from '@/types';
 import DRAWING_ABI from '@/abis/Drawing.json';
+import {DrawingPoolInfo} from "@/core/types";
 
 export default function useDrawingRead(
   fn: string,
@@ -15,6 +16,9 @@ export default function useDrawingRead(
     abi: parseAbi([
       'function ids(uint256 _index) returns (uint256)',
       'function getTokenPoolInfo() returns(uint256[] memory)',
+        'function usersDrawable(address user, uint32 poolId) returns(uint32)',
+        // 'function drawingPoolsInfo(uint32 poolId) returns((bool, bool, uint32[], uint32[], uint32[]))',
+      'function getPoolInfo(uint32 poolId) returns((uint32[3], uint32[3], uint32[3]))'
     ]),
     // abi: DRAWING_ABI,
   };
@@ -39,7 +43,7 @@ export default function useDrawingRead(
   };
 }
 
-type DrawingRead = bigint & bigint[] & any;
+type DrawingRead = bigint & bigint[] &DrawingPoolInfo & any;
 
 function mappingResult(fn: string, result: any): DrawingRead {
   switch (fn) {
@@ -47,6 +51,14 @@ function mappingResult(fn: string, result: any): DrawingRead {
       return BigInt(result);
     case 'getTokenPoolInfo':
       return result as bigint[];
+    case 'usersDrawable':
+        return BigInt(result)
+    case 'getPoolInfo':
+        return {
+            units: result[0] as bigint[],
+            probs: result[1] as bigint[],
+            accumulatedProbs: result[2] as bigint[],
+        }
     default:
       return result;
   }
