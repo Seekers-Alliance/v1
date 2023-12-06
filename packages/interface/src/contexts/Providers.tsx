@@ -7,18 +7,17 @@ import {
   connectorsForWallets,
 } from '@rainbow-me/rainbowkit';
 import { coreWallet } from '@rainbow-me/rainbowkit/wallets';
-import { configureChains, createConfig, WagmiConfig } from 'wagmi';
+import { configureChains, createConfig, sepolia, WagmiConfig } from 'wagmi';
 import {
   mainnet,
-  arbitrum,
-  goerli,
   avalancheFuji,
   avalanche,
-  arbitrumGoerli,
+  optimism,
+  optimismGoerli,
 } from 'wagmi/chains';
 import { publicProvider } from 'wagmi/providers/public';
 const { chains, publicClient, webSocketPublicClient } = configureChains(
-  [mainnet, goerli, arbitrum, arbitrumGoerli, avalanche, avalancheFuji],
+  [mainnet, sepolia, optimism, optimismGoerli, avalanche, avalancheFuji],
   [publicProvider()]
 );
 

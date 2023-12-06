@@ -2,23 +2,35 @@ import { decodeEventLog, Log, parseAbi } from 'viem';
 import { mappingEvent } from '@/core/events/event';
 import {
   EventData,
+  RequestCompletedParams, RequestSentParams,
   SetDrawingPoolParams,
   SetUnitPoolParams,
 } from '@/core/types';
 
-type DrawingEvent = SetUnitPoolParams | SetDrawingPoolParams;
+type DrawingEvent =
+  | SetUnitPoolParams
+  | SetDrawingPoolParams
+  | RequestCompletedParams
+    | RequestSentParams;
 
 export function filterDrawingEvents(
   event: string,
   logs: Log[]
 ): EventData<DrawingEvent> | null {
   const abi = parseAbi([
+      'event RequestSent(uint256 requestId, address _requester)',
     'event SetUnitPool(uint32 unitPoolID)',
     'event SetDrawingPool(uint32 drawingPoolID)',
+    'event RequestCompleted(uint256 indexed requestId, address indexed requester)',
   ]);
   let topic = '';
   let mapping = null;
   switch (event) {
+    case 'RequestSent':
+      topic =
+        '0x48b98ad7a8a8dbe21cc82bf98710ad4d2cdd949ccac393692e4d9a1722c162c7';
+      mapping = mappingRequestSentParams;
+      break;
     case 'SetUnitPool':
       topic =
         '0xccfa93fc6dee2f7a59e08bd1a7bce043edec08ba7a9daa51aa4be9c95294acd6';
@@ -28,6 +40,11 @@ export function filterDrawingEvents(
       topic =
         '0x83b611e3a9f3ebea1fa1254d2c7535bd0733ed9b76a5a2b0da450d5ba399ecbd';
       mapping = mappingSetDrawingPoolParams;
+      break;
+    case 'RequestCompleted':
+      topic =
+        '0x83b611e3a9f3ebea1fa1254d2c7535bd0733ed9b76a5a2b0da450d5ba399ecbd';
+      mapping = mappingRequestCompletedParams;
       break;
     default:
       return null;
@@ -64,4 +81,27 @@ export function mappingSetDrawingPoolParams(
     //@ts-ignore
     drawingPoolID: a.drawingPoolID,
   } as SetDrawingPoolParams;
+}
+
+export function mappingRequestCompletedParams(
+  a: readonly unknown[] | Record<string, unknown>
+): RequestCompletedParams {
+  return {
+    //@ts-ignore
+    requestId: a.requestId,
+    //@ts-ignore
+    requester: a.requester,
+  } as RequestCompletedParams;
+}
+
+
+export function mappingRequestSentParams(
+    a: readonly unknown[] | Record<string, unknown>
+): RequestSentParams {
+  return {
+    //@ts-ignore
+    requestId: a._requestId,
+    //@ts-ignore
+    requester: a._requester,
+  } as RequestSentParams;
 }

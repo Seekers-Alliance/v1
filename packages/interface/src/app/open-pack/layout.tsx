@@ -10,7 +10,7 @@ export default function Layout({ children }: { children: ReactNode }) {
         <SimpleNavbar />
       </div>
       <div className='fixed left-[900px] top-[56px]'>
-        <div className='inline-flex w-[400px] justify-end'>
+        <div className='inline-flex w-[500px] justify-end'>
           <ConnectButton />
         </div>
       </div>
