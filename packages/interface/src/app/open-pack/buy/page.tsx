@@ -93,7 +93,7 @@ export default function Page() {
       <div className='fixed left-[767px] top-[530px]'>
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
-            <BuyStatusButton packId={0} network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} />
+            <BuyStatusButton packId={0} network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} price={packPrice?.native || BigInt(0)}/>
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
@@ -130,18 +130,18 @@ enum BuyStatus {
 
 interface BuyStatusButtonProps {
   packId: number;
+  price: bigint;
   amount: number;
   network: string;
 }
 
-function BuyStatusButton({ network,amount,packId }: BuyStatusButtonProps) {
+function BuyStatusButton({ network,amount,packId,price }: BuyStatusButtonProps) {
   const {marketplaceReceiverAddress}=useAddresses()
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const router = useRouter();
-  const {data:price}=useMarketplaceRead('getPackConvertedNativePrice',[packId],getChainId(network))
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
 
   const {
@@ -171,16 +171,18 @@ function BuyStatusButton({ network,amount,packId }: BuyStatusButtonProps) {
   const handleBuy = useCallback(() => {
     console.log(`price: ${price}`)
     if (status === BuyStatus.Buy) {
+      const value = price*BigInt(amount)
+        console.log(`value: ${value}`)
       switch (getChainId(network)) {
         case 43113:
           //@ts-ignore
-          submit?.({args: [packId,amount],value:price});
+          submit?.({args: [packId,amount],value:value});
           break;
         case 11155111:
-            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:price});
+            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:value});
             break;
         default:
-            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:price});
+            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:value});
       }
 
       return;
