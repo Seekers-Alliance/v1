@@ -1,12 +1,12 @@
 import { decodeEventLog, Log, parseAbi } from 'viem';
-import { mappingEvent } from '@/core/events/event';
+import {mappingEvent} from '@/core/events/event';
 import {
-  EventData,
+  EventData, RequestCompletedParams,
   SetDrawingPoolParams,
   SetUnitPoolParams,
 } from '@/core/types';
 
-type DrawingEvent = SetUnitPoolParams | SetDrawingPoolParams;
+type DrawingEvent = SetUnitPoolParams | SetDrawingPoolParams | RequestCompletedParams;
 
 export function filterDrawingEvents(
   event: string,
@@ -15,6 +15,7 @@ export function filterDrawingEvents(
   const abi = parseAbi([
     'event SetUnitPool(uint32 unitPoolID)',
     'event SetDrawingPool(uint32 drawingPoolID)',
+      'event RequestCompleted(uint256 indexed requestId, address indexed requester)'
   ]);
   let topic = '';
   let mapping = null;
@@ -29,6 +30,11 @@ export function filterDrawingEvents(
         '0x83b611e3a9f3ebea1fa1254d2c7535bd0733ed9b76a5a2b0da450d5ba399ecbd';
       mapping = mappingSetDrawingPoolParams;
       break;
+    case 'RequestCompleted':
+        topic =
+            '0x83b611e3a9f3ebea1fa1254d2c7535bd0733ed9b76a5a2b0da450d5ba399ecbd';
+        mapping = mappingRequestCompletedParams;
+        break;
     default:
       return null;
   }
@@ -64,4 +70,15 @@ export function mappingSetDrawingPoolParams(
     //@ts-ignore
     drawingPoolID: a.drawingPoolID,
   } as SetDrawingPoolParams;
+}
+
+export function mappingRequestCompletedParams(
+    a: readonly unknown[] | Record<string, unknown>
+): RequestCompletedParams {
+  return {
+    //@ts-ignore
+    requestId: a.requestId,
+    //@ts-ignore
+    requester: a.requester,
+  } as RequestCompletedParams;
 }

@@ -12,6 +12,25 @@ import {
   RequestSentParams,
 } from '@/core/types';
 
+
+export async function getEvent<T>(
+    client: PublicClient,
+    params: GetEventParams<T>,
+    mapper: (a: readonly unknown[] | Record<string, unknown>) => T
+    ): Promise<EventData<T>[]> {
+    const config = {
+        address: params.address,
+        abi: params.abi,
+        eventName: params.eventName,
+        args: params.args,
+        fromBlock: params.fromBlock,
+        toBlock: params.toBlock,
+    };
+    //@ts-ignore
+    const event = await client.getContractEvents({ ...config });
+    return event.map((e) => mappingEvent(e, mapper));
+}
+
 export async function getRandomWordsFulfilledEventsByRequestIds(
   client: PublicClient,
   params: GetEventParams<{ requestId: bigint[] }>
