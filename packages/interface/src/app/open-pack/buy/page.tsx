@@ -155,6 +155,7 @@ function BuyStatusButton({ network,amount,packId }: BuyStatusButtonProps) {
       [switchNetwork, chain]
   );
   const handleBuy = useCallback(() => {
+    console.log(`price: ${price}`)
     if (status === BuyStatus.Buy) {
       switch (getChainId(network)) {
         case 43113:
@@ -223,7 +224,12 @@ function BuyStatusButton({ network,amount,packId }: BuyStatusButtonProps) {
         </ConnectWalletButton>
       );
     case BuyStatus.Buy:
-      return <PrimaryButton loading={isLoading} onClick={handleBuy}>BUY</PrimaryButton>;
+      return (
+          <>
+            {contextHolder}
+            <PrimaryButton loading={isLoading} onClick={handleBuy}>BUY</PrimaryButton>
+          </>
+      );
     case BuyStatus.AfterBuy:
       return <PrimaryButton onClick={handleAfterBuy}>OPEN PACKS</PrimaryButton>;
   }
