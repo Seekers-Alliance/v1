@@ -4,8 +4,8 @@ const theme: ThemeConfig = {
   token: {
     fontSize: 16,
     colorPrimary: '#1890ff',
-    colorText: '#FFFFFF',
-    colorBgElevated: '#000000',
+    // colorText: '#FFFFFF',
+    // colorBgElevated: 'rgb(75 85 99)',
   },
   components: {
     Modal: {

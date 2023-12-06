@@ -2,7 +2,7 @@ import { decodeEventLog, Log, parseAbi } from 'viem';
 import { mappingEvent } from '@/core/events/event';
 import {
   EventData,
-  RequestCompletedParams,
+  RequestCompletedParams, RequestSentParams,
   SetDrawingPoolParams,
   SetUnitPoolParams,
 } from '@/core/types';
@@ -10,13 +10,15 @@ import {
 type DrawingEvent =
   | SetUnitPoolParams
   | SetDrawingPoolParams
-  | RequestCompletedParams;
+  | RequestCompletedParams
+    | RequestSentParams;
 
 export function filterDrawingEvents(
   event: string,
   logs: Log[]
 ): EventData<DrawingEvent> | null {
   const abi = parseAbi([
+      'event RequestSent(uint256 requestId, address _requester)',
     'event SetUnitPool(uint32 unitPoolID)',
     'event SetDrawingPool(uint32 drawingPoolID)',
     'event RequestCompleted(uint256 indexed requestId, address indexed requester)',
@@ -24,6 +26,11 @@ export function filterDrawingEvents(
   let topic = '';
   let mapping = null;
   switch (event) {
+    case 'RequestSent':
+      topic =
+        '0x48b98ad7a8a8dbe21cc82bf98710ad4d2cdd949ccac393692e4d9a1722c162c7';
+      mapping = mappingRequestSentParams;
+      break;
     case 'SetUnitPool':
       topic =
         '0xccfa93fc6dee2f7a59e08bd1a7bce043edec08ba7a9daa51aa4be9c95294acd6';
@@ -85,4 +92,16 @@ export function mappingRequestCompletedParams(
     //@ts-ignore
     requester: a.requester,
   } as RequestCompletedParams;
+}
+
+
+export function mappingRequestSentParams(
+    a: readonly unknown[] | Record<string, unknown>
+): RequestSentParams {
+  return {
+    //@ts-ignore
+    requestId: a._requestId,
+    //@ts-ignore
+    requester: a._requester,
+  } as RequestSentParams;
 }

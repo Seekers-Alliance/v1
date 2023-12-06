@@ -9,6 +9,8 @@ import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { TransactionAction } from '@/components/transaction';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import { useAddresses } from '@/hooks/useAddresses';
+import OpenStepModal from "@/components/OpenStepModal";
+import {filterDrawingEvents} from "@/core/events/drawing";
 
 export default function Page() {
   const { address } = useAccount();
@@ -51,6 +53,8 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
+  const [openModalVisible, setOpenModalVisible] = useState(false);
+  const [requestId, setRequestId] = useState<string | null>(null);
   const router = useRouter();
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const {
@@ -77,7 +81,16 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
   const handleOpenPack = useCallback(() => {
     console.log('open');
     submit?.({ args: [[packId], [poolAmount]] });
+    // setStatus(OpenStatus.WaitingForRandomWords);
   }, [submit]);
+
+  const handleOpenPopup = useCallback(() => {
+    setOpenModalVisible(true)
+    setStatus(OpenStatus.AfterOpen)
+  }, []);
+  const handleClosePopup = useCallback(() => {
+    setOpenModalVisible(false)
+  }, []);
 
   const handleAfterOpening = useCallback(() => {
     router.push('/open-pack/opening');
@@ -111,17 +124,30 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
       }
     }
   }, [status, isConnected, chain]);
-  // useEffect(() => {
-  //   if (confirmData) {
-  //     const event = filterDrawingEvents('SetUnitPool', confirmData.logs);
-  //     console.log('confirmData', event);
-  //   }
-  // }, [confirmData]);
+
   useEffect(() => {
     if (isConfirmSuccess) {
-      setStatus(OpenStatus.AfterOpen);
+      setStatus(OpenStatus.WaitingForRandomWords);
     }
   }, [isConfirmSuccess]);
+
+  useEffect(() => {
+    if (confirmData) {
+      const event = filterDrawingEvents(
+        'RequestSent',
+        confirmData.logs
+      );
+      console.log(`event: ${event}`);
+      if (event) {
+        //@ts-ignore
+        setRequestId(event.args.requestId);
+        setStatus(OpenStatus.WaitingForRandomWords);
+        //@ts-ignore
+        console.log(`requestId: ${event.args.requestId}`);
+      }
+    }
+  }, [confirmData]);
+
   switch (status) {
     case OpenStatus.BeforeOpen:
       return (
@@ -131,12 +157,23 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
       );
     case OpenStatus.Open:
       return (
-        <>
-          {contextHolder}
-          <PrimaryButton loading={isLoading} onClick={handleOpenPack}>
-            {children}
-          </PrimaryButton>
-        </>
+          <>
+            {contextHolder}
+            <PrimaryButton loading={isLoading} onClick={handleOpenPack}>
+              {children}
+            </PrimaryButton>
+          </>
+      );
+    case OpenStatus.RandomWordsReceived:
+    case OpenStatus.WaitingForRandomWords:
+      return (
+          <>
+            {contextHolder}
+            <PrimaryButton onClick={handleOpenPopup}>
+              WAITING
+            </PrimaryButton>
+            <OpenStepModal open={openModalVisible} onOk={handleClosePopup} onCancel={handleClosePopup}/>
+          </>
       );
     case OpenStatus.AfterOpen:
       return <PrimaryButton onClick={handleAfterOpening}>SEE CARDS</PrimaryButton>;
@@ -146,5 +183,7 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
 enum OpenStatus {
   BeforeOpen,
   Open,
+  WaitingForRandomWords,
+    RandomWordsReceived,
   AfterOpen,
 }
