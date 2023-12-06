@@ -1,5 +1,5 @@
 'use client';
-import {useCallback, useEffect, useMemo, useState} from 'react';
+import {ReactNode, useCallback, useEffect, useMemo, useState} from 'react';
 import { PrimaryButton, SelectingButton } from '@/components/Button';
 import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
 import { useRouter } from 'next/navigation';
@@ -29,6 +29,18 @@ export default function Page() {
         return 'ETH'
     }
   },[selectedNetwork])
+  const totalCost=useMemo(()=>{
+    let cost='0'
+    let coin=nativeCoin
+    if (selectedToken===0){
+      cost=formatAmount((packPrice?.native || BigInt(0))*BigInt(amountList[selectedAmount]),18,4)
+
+    }else {
+      cost=formatAmount((packPrice?.usdt || BigInt(0))*BigInt(amountList[selectedAmount]),6,4)
+    }
+    return `${cost} ${coin}`
+  },[packPrice,nativeCoin,selectedToken,selectedAmount])
+
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -93,7 +105,13 @@ export default function Page() {
       <div className='fixed left-[767px] top-[530px]'>
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
-            <BuyStatusButton packId={0} network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} price={packPrice?.native || BigInt(0)}/>
+            <BuyStatusButton
+                packId={0}
+                network={networkList[selectedNetwork]}
+                amount={amountList[selectedAmount]}
+                price={packPrice?.native || BigInt(0)}>
+                BUY | {`${totalCost}`}
+            </BuyStatusButton>
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
@@ -133,9 +151,10 @@ interface BuyStatusButtonProps {
   price: bigint;
   amount: number;
   network: string;
+  children?: ReactNode;
 }
 
-function BuyStatusButton({ network,amount,packId,price }: BuyStatusButtonProps) {
+function BuyStatusButton({ network,amount,packId,price,children }: BuyStatusButtonProps) {
   const {marketplaceReceiverAddress}=useAddresses()
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
@@ -243,7 +262,7 @@ function BuyStatusButton({ network,amount,packId,price }: BuyStatusButtonProps) 
       return (
           <>
             {contextHolder}
-            <PrimaryButton loading={isLoading} onClick={handleBuy}>BUY</PrimaryButton>
+            <PrimaryButton loading={isLoading} onClick={handleBuy}>{children}</PrimaryButton>
           </>
       );
     case BuyStatus.AfterBuy:
