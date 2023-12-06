@@ -1,7 +1,7 @@
 import useDrawingConfig from '@/hooks/useDrawingConfig';
 import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import useDrawingWrite from '@/hooks/useDrawingWrite';
-import { useEffect, useMemo, useRef } from 'react';
+import {useEffect, useMemo, useRef} from 'react';
 import { Hash } from 'viem';
 
 export default function useDrawingTxn(fn: string) {

@@ -50,6 +50,17 @@ export interface TransferSingleParams {
     value: bigint;
 }
 
+export interface MessageSentParams {
+    messageId: string;
+    destinationChainSelector: bigint;
+    messageSender: Address;
+}
+
+export interface MessageReceivedParams {
+    messageId: string;
+    sourceChainSelector: bigint;
+}
+
 export interface TransferBatchParams {
     operator: Address;
     from: Address;

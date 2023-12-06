@@ -11,8 +11,11 @@ import {useAddresses} from "@/hooks/useAddresses";
 import useMarketplaceRead from "@/hooks/useMarketplaceRead";
 import usePackPrice from "@/hooks/usePackPrice";
 import {formatAmount} from "@/common";
+import useWaitForCCIP from "@/hooks/useWaitForCCIP";
+import Link from "next/link";
 
 export default function Page() {
+  const {marketplaceReceiverAddress}=useAddresses()
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
   const amountList = [1, 5, 10, 15, 20, 25];
   const [selectedNetwork, setSelectedNetwork] = useState(0);
@@ -114,8 +117,11 @@ export default function Page() {
             </BuyStatusButton>
           </div>
           <div className='w-[14%]'>
+
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
-              <img src={'/External-Link.svg'} />
+              <Link href={generateCCIPLink(marketplaceReceiverAddress)}>
+                <img src={'/External-Link.svg'} />
+              </Link>
             </div>
           </div>
         </div>
@@ -143,6 +149,7 @@ function getChainId(network: string): number {
 enum BuyStatus {
   BeforeBuy,
   Buy,
+  PendingBuy,
   AfterBuy,
 }
 
@@ -161,8 +168,9 @@ function BuyStatusButton({ network,amount,packId,price,children }: BuyStatusButt
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const router = useRouter();
+  const [senderHash, setSenderHash] = useState<`0x${string}`|undefined>(undefined);
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
-
+  const {isSuccess}=useWaitForCCIP(11155111,senderHash)
   const {
     hash,
     submit,
@@ -235,9 +243,20 @@ function BuyStatusButton({ network,amount,packId,price,children }: BuyStatusButt
     console.log(`confirmData`,confirmData)
     if (confirmData){
       console.log(`confirmData`,confirmData)
+      setSenderHash(confirmData?.transactionHash)
+      if (getChainId(network)===43113){
         setStatus(BuyStatus.AfterBuy);
+      }else {
+        setStatus(BuyStatus.PendingBuy);
+      }
     }
   }, [confirmData]);
+
+    useEffect(() => {
+        if (isSuccess && status === BuyStatus.PendingBuy) {
+        setStatus(BuyStatus.AfterBuy);
+        }
+    }, [status,isSuccess]);
 
   useEffect(() => {
     if (status === BuyStatus.BeforeBuy) {
@@ -265,7 +284,14 @@ function BuyStatusButton({ network,amount,packId,price,children }: BuyStatusButt
             <PrimaryButton loading={isLoading} onClick={handleBuy}>{children}</PrimaryButton>
           </>
       );
+    case BuyStatus.PendingBuy:
+      return <PrimaryButton loading={true}>Waiting For CCIP</PrimaryButton>
     case BuyStatus.AfterBuy:
       return <PrimaryButton onClick={handleAfterBuy}>OPEN PACKS</PrimaryButton>;
   }
+}
+
+
+function generateCCIPLink(address:string):string{
+  return `https://ccip.chain.link/address/${address}`
 }
