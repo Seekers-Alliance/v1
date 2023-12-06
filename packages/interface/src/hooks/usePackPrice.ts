@@ -3,11 +3,12 @@ import { useContractRead, useContractReads, useContractWrite } from 'wagmi';
 import { parseAbi } from 'viem';
 import { QueryResult } from '@/types';
 import DRAWING_ABI from '@/abis/Drawing.json';
-import {DrawingPoolInfo} from "@/core/types";
-import useMarketplaceConfig from "@/hooks/useMarketplaceConfig";
+import { DrawingPoolInfo } from '@/core/types';
+import useMarketplaceConfig from '@/hooks/useMarketplaceConfig';
 
 export default function usePackPrice(
-  packId:number,chainId:number,
+  packId: number,
+  chainId: number
 ): QueryResult<PackPrice> {
   const config = useMarketplaceConfig();
   let address;
@@ -16,19 +17,19 @@ export default function usePackPrice(
   switch (chainId) {
     case 43113:
       address = config.receiver;
-      usdtAddress= "0xae940284e4eB37Fec1F1Bf1D7f297EB1f07f2B26"
-        multiCallAddress= "0xcA11bde05977b3631167028862bE2a173976CA11"
-      break
+      usdtAddress = '0xae940284e4eB37Fec1F1Bf1D7f297EB1f07f2B26';
+      multiCallAddress = '0xcA11bde05977b3631167028862bE2a173976CA11';
+      break;
     case 11155111:
-        address = config.sender;
-        usdtAddress= "0x4E85938b8cba54F4726A649b727c15Cca379b146"
-        multiCallAddress= "0xcA11bde05977b3631167028862bE2a173976CA11"
-        break
+      address = config.sender;
+      usdtAddress = '0x4E85938b8cba54F4726A649b727c15Cca379b146';
+      multiCallAddress = '0xcA11bde05977b3631167028862bE2a173976CA11';
+      break;
     default:
       address = config.sender;
-      usdtAddress= "0x4E85938b8cba54F4726A649b727c15Cca379b146"
-      multiCallAddress= "0xcA11bde05977b3631167028862bE2a173976CA11"
-          chainId=11155111
+      usdtAddress = '0x4E85938b8cba54F4726A649b727c15Cca379b146';
+      multiCallAddress = '0xcA11bde05977b3631167028862bE2a173976CA11';
+      chainId = 11155111;
   }
   const marketplaceConfig = {
     address: address,
@@ -36,27 +37,27 @@ export default function usePackPrice(
       'function getPackConvertedPrice(uint32 _packID, address _token) public view returns(uint256)',
       'function getPackConvertedNativePrice(uint32 _packID) public view returns(uint256)',
     ]),
-    chainId:chainId,
+    chainId: chainId,
   };
-  const contracts=[
+  const contracts = [
     {
       ...marketplaceConfig,
       functionName: 'getPackConvertedNativePrice',
       args: [packId],
-      chainId:chainId,
+      chainId: chainId,
     },
     {
       ...marketplaceConfig,
       functionName: 'getPackConvertedPrice',
-      args: [packId,usdtAddress],
-      chainId:chainId,
-    }
-  ]
+      args: [packId, usdtAddress],
+      chainId: chainId,
+    },
+  ];
   const reads = useContractReads({
     multicallAddress: multiCallAddress as `0x${string}`,
     contracts,
-    watch:true
-      });
+    watch: true,
+  });
   console.log(reads);
   if (!reads.data) {
     return { ...reads, data: null };
@@ -74,6 +75,6 @@ export default function usePackPrice(
 }
 
 interface PackPrice {
-    native: bigint;
-    usdt: bigint;
+  native: bigint;
+  usdt: bigint;
 }

@@ -3,7 +3,7 @@ import { SpecificChainButton } from '@/components/Button';
 import React, { useCallback, useEffect, useMemo } from 'react';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
-import {NFTProfile} from '@/components/NFTProfile';
+import { NFTProfile } from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import CountInputCard from '@/components/CountInputCard';
 import { useTokenList } from '@/hooks/useTokenList';

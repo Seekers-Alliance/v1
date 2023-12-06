@@ -43,36 +43,36 @@ export interface RequestCompletedParams {
 }
 
 export interface TransferSingleParams {
-    operator: Address;
-    from: Address;
-    to: Address;
-    id: bigint;
-    value: bigint;
+  operator: Address;
+  from: Address;
+  to: Address;
+  id: bigint;
+  value: bigint;
 }
 
 export interface MessageSentParams {
-    messageId: string;
-    destinationChainSelector: bigint;
-    messageSender: Address;
+  messageId: string;
+  destinationChainSelector: bigint;
+  messageSender: Address;
 }
 
 export interface MessageReceivedParams {
-    messageId: string;
-    sourceChainSelector: bigint;
+  messageId: string;
+  sourceChainSelector: bigint;
 }
 
 export interface TransferBatchParams {
-    operator: Address;
-    from: Address;
-    to: Address;
-    ids: bigint[];
-    values: bigint[];
+  operator: Address;
+  from: Address;
+  to: Address;
+  ids: bigint[];
+  values: bigint[];
 }
 
-export interface DrawingPoolInfo{
-    enable: boolean;
-    unlimited: boolean;
-    units: bigint[];
-    probs: bigint[];
-    accumulatedProbs: bigint[];
+export interface DrawingPoolInfo {
+  enable: boolean;
+  unlimited: boolean;
+  units: bigint[];
+  probs: bigint[];
+  accumulatedProbs: bigint[];
 }

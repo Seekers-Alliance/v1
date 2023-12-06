@@ -6,7 +6,7 @@ import ProbabilityInputCard from '@/components/ProbabilityInputCard';
 import { useUnitPoolStore } from '@/stores/unitPool';
 import { TransactionAction } from '@/components/transaction';
 import useTxnNotify from '@/hooks/useTxnNotify';
-import {NFTProfile} from '@/components/NFTProfile';
+import { NFTProfile } from '@/components/NFTProfile';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { useTokenList } from '@/hooks/useTokenList';
 import { filterDrawingEvents } from '@/core/events/drawing';

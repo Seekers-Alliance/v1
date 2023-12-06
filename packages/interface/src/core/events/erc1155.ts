@@ -1,9 +1,12 @@
 import { decodeEventLog, Log, parseAbi } from 'viem';
-import {mappingEvent} from '@/core/events/event';
+import { mappingEvent } from '@/core/events/event';
 import {
-  EventData, RequestCompletedParams,
+  EventData,
+  RequestCompletedParams,
   SetDrawingPoolParams,
-  SetUnitPoolParams, TransferBatchParams, TransferSingleParams,
+  SetUnitPoolParams,
+  TransferBatchParams,
+  TransferSingleParams,
 } from '@/core/types';
 
 type ERC1155Event = TransferSingleParams | TransferBatchParams;
@@ -11,7 +14,7 @@ type ERC1155Event = TransferSingleParams | TransferBatchParams;
 export function filterERC1155Events(
   event: string,
   logs: Log[]
-): EventData<ERC1155Event>[]{
+): EventData<ERC1155Event>[] {
   const abi = parseAbi([
     'event TransferSingle(address indexed operator, address indexed from, address indexed to, uint256 id, uint256 value)',
     'event TransferBatch(address indexed operator,address indexed from,address indexed to,uint256[] ids,uint256[] values)',
@@ -66,18 +69,18 @@ export function mappingTransferSingleParams(
   } as TransferSingleParams;
 }
 export function mappingTransferBatchParams(
-    a: readonly unknown[] | Record<string, unknown>
+  a: readonly unknown[] | Record<string, unknown>
 ): TransferBatchParams {
-     return {
-        //@ts-ignore
-        operator: a.operator,
-        //@ts-ignore
-        from: a.from,
-        //@ts-ignore
-        to: a.to,
-        //@ts-ignore
-        ids: a.ids,
-        //@ts-ignore
-        values: a.values,
-    } as TransferBatchParams;
+  return {
+    //@ts-ignore
+    operator: a.operator,
+    //@ts-ignore
+    from: a.from,
+    //@ts-ignore
+    to: a.to,
+    //@ts-ignore
+    ids: a.ids,
+    //@ts-ignore
+    values: a.values,
+  } as TransferBatchParams;
 }

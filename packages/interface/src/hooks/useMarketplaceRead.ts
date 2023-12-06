@@ -3,13 +3,13 @@ import { useContractRead, useContractReads, useContractWrite } from 'wagmi';
 import { parseAbi } from 'viem';
 import { QueryResult } from '@/types';
 import DRAWING_ABI from '@/abis/Drawing.json';
-import {DrawingPoolInfo} from "@/core/types";
-import useMarketplaceConfig from "@/hooks/useMarketplaceConfig";
+import { DrawingPoolInfo } from '@/core/types';
+import useMarketplaceConfig from '@/hooks/useMarketplaceConfig';
 
 export default function useMarketplaceRead(
   fn: string,
   args: any = [],
-  chainId:number,
+  chainId: number,
   watch = true
 ): QueryResult<DrawingRead> {
   const config = useMarketplaceConfig();
@@ -17,19 +17,19 @@ export default function useMarketplaceRead(
   switch (chainId) {
     case 43113:
       address = config.receiver;
-      break
+      break;
     case 11155111:
-        address = config.sender;
-        break
+      address = config.sender;
+      break;
     default:
-        address = config.receiver;
+      address = config.receiver;
   }
   const marketplaceConfig = {
     address: address,
     abi: parseAbi([
       'function getPackConvertedNativePrice(uint32 _packID) public view returns(uint256)',
     ]),
-    chainId:chainId,
+    chainId: chainId,
   };
   console.log(fn, marketplaceConfig, args);
   const read = useContractRead({

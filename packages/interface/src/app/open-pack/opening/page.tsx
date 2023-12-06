@@ -1,11 +1,13 @@
 'use client';
 import { useCallback, useEffect, useState } from 'react';
-import {useRouter, useSearchParams} from 'next/navigation';
+import { useRouter, useSearchParams } from 'next/navigation';
 
 export default function Page() {
   const router = useRouter();
-  const searchParams = useSearchParams()
-  const hash = searchParams.get('hash') || '0x445f4274aef2f538287cce24663922e0d2ad3bf9a22c1e9c7acebe19e272aff1'
+  const searchParams = useSearchParams();
+  const hash =
+    searchParams.get('hash') ||
+    '0x445f4274aef2f538287cce24663922e0d2ad3bf9a22c1e9c7acebe19e272aff1';
   const handleAfterAnimation = useCallback(() => {
     console.log('after animation');
     router.push(`/receipts/${hash}`);

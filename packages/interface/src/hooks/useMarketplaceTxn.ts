@@ -3,9 +3,9 @@ import { useContractWrite, useWaitForTransaction } from 'wagmi';
 import useDrawingWrite from '@/hooks/useDrawingWrite';
 import { useEffect, useMemo, useRef } from 'react';
 import { Hash } from 'viem';
-import useMarketplaceWrite from "@/hooks/useMarketplaceWrite";
+import useMarketplaceWrite from '@/hooks/useMarketplaceWrite';
 
-export default function useMarketplaceTxn(fn: string,chainId:number) {
+export default function useMarketplaceTxn(fn: string, chainId: number) {
   const hashRef = useRef<Hash>();
   const {
     data: submitData,
@@ -14,7 +14,7 @@ export default function useMarketplaceTxn(fn: string,chainId:number) {
     isError: isSubmitError,
     isSuccess: isSubmitSuccess,
     error: submitError,
-  } = useMarketplaceWrite(fn,chainId);
+  } = useMarketplaceWrite(fn, chainId);
   const {
     data: confirmData,
     isError: isConfirmError,

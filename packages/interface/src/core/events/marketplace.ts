@@ -1,9 +1,14 @@
 import { decodeEventLog, Log, parseAbi } from 'viem';
-import {mappingEvent} from '@/core/events/event';
+import { mappingEvent } from '@/core/events/event';
 import {
-  EventData, MessageReceivedParams, MessageSentParams, RequestCompletedParams,
+  EventData,
+  MessageReceivedParams,
+  MessageSentParams,
+  RequestCompletedParams,
   SetDrawingPoolParams,
-  SetUnitPoolParams, TransferBatchParams, TransferSingleParams,
+  SetUnitPoolParams,
+  TransferBatchParams,
+  TransferSingleParams,
 } from '@/core/types';
 
 type MarketplaceEvent = MessageSentParams | MessageReceivedParams;
@@ -11,7 +16,7 @@ type MarketplaceEvent = MessageSentParams | MessageReceivedParams;
 export function filterMarketplaceEvents(
   event: string,
   logs: Log[]
-): EventData<MarketplaceEvent> | null{
+): EventData<MarketplaceEvent> | null {
   const abi = parseAbi([
     'event MessageSent(bytes32 indexed messageId,uint64 indexed destinationChainSelector,address indexed messageSender)',
     'event MessageReceived(bytes32 indexed messageId,uint64 indexed sourceChainSelector)',
@@ -62,12 +67,12 @@ export function mappingMessageSentParams(
   } as MessageSentParams;
 }
 export function mappingMessageReceivedParams(
-    a: readonly unknown[] | Record<string, unknown>
+  a: readonly unknown[] | Record<string, unknown>
 ): MessageReceivedParams {
-     return {
+  return {
     //@ts-ignore
-             messageId: a.messageId,
-             //@ts-ignore
-             sourceChainSelector: a.sourceChainSelector,
-    } as MessageReceivedParams;
+    messageId: a.messageId,
+    //@ts-ignore
+    sourceChainSelector: a.sourceChainSelector,
+  } as MessageReceivedParams;
 }

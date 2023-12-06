@@ -2,7 +2,8 @@ import { useAddresses } from '@/hooks/useAddresses';
 import DRAWING_ABI from '@/abis/Drawing.json';
 import { parseAbi } from 'viem';
 export default function useMarketplaceConfig() {
-  const { marketplaceSenderAddress,marketplaceReceiverAddress } = useAddresses();
+  const { marketplaceSenderAddress, marketplaceReceiverAddress } =
+    useAddresses();
   return {
     sender: marketplaceSenderAddress,
     receiver: marketplaceReceiverAddress,

@@ -23,7 +23,7 @@ export default function SetDrawingProbabilitySection({
   const { getPool, add } = useDrawingPoolStore();
   const defaultPool = useMemo(() => getPool(poolName), [poolName]);
   const [poolId, setPoolId] = React.useState<bigint | null>(null);
-  const { pools: unitPools,getPool:getUnitPool } = useUnitPoolStore();
+  const { pools: unitPools, getPool: getUnitPool } = useUnitPoolStore();
   const poolProbabilityList = useMemo(
     () =>
       defaultPool?.probabilities ||
@@ -46,7 +46,7 @@ export default function SetDrawingProbabilitySection({
     const unitPoolIds = unitPools.list.map((name) =>
       BigInt(getUnitPool(name)?.id || 0)
     );
-    console.log('submit unitPoolIds',unitPoolIds, probabilityList)
+    console.log('submit unitPoolIds', unitPoolIds, probabilityList);
     //@ts-ignore
     submit?.({ args: [unitPoolIds, probabilityList] });
   }, [poolId, add, probabilityList]);
