@@ -39,3 +39,11 @@ export interface RequestCompletedParams {
   requestId: bigint;
   requester: Address;
 }
+
+export interface DrawingPoolInfo{
+    enable: boolean;
+    unlimited: boolean;
+    units: bigint[];
+    probs: bigint[];
+    accumulatedProbs: bigint[];
+}

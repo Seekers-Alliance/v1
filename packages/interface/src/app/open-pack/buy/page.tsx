@@ -8,6 +8,7 @@ import useTxnNotify from "@/hooks/useTxnNotify";
 import {TransactionAction} from "@/components/transaction";
 import useMarketplaceTxn from "@/hooks/useMarketplaceTxn";
 import {useAddresses} from "@/hooks/useAddresses";
+import useMarketplaceRead from "@/hooks/useMarketplaceRead";
 
 export default function Page() {
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
@@ -78,7 +79,7 @@ export default function Page() {
       <div className='fixed left-[767px] top-[530px]'>
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
-            <BuyStatusButton network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} />
+            <BuyStatusButton packId={0} network={networkList[selectedNetwork]} amount={amountList[selectedAmount]} />
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
@@ -114,18 +115,19 @@ enum BuyStatus {
 }
 
 interface BuyStatusButtonProps {
+  packId: number;
   amount: number;
   network: string;
 }
 
-function BuyStatusButton({ network,amount }: BuyStatusButtonProps) {
+function BuyStatusButton({ network,amount,packId }: BuyStatusButtonProps) {
   const {marketplaceReceiverAddress}=useAddresses()
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const router = useRouter();
-
+  const {data:price}=useMarketplaceRead('getPackConvertedNativePrice',[packId],getChainId(network))
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
 
   const {
@@ -154,7 +156,18 @@ function BuyStatusButton({ network,amount }: BuyStatusButtonProps) {
   );
   const handleBuy = useCallback(() => {
     if (status === BuyStatus.Buy) {
-      submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,1,amount,1]});
+      switch (getChainId(network)) {
+        case 43113:
+          //@ts-ignore
+          submit?.({args: [packId,amount],value:price});
+          break;
+        case 11155111:
+            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:price});
+            break;
+        default:
+            submit?.({args: [BigInt('14767482510784806043'),marketplaceReceiverAddress,packId,amount,1],value:price});
+      }
+
       return;
     }
   }, [status]);
