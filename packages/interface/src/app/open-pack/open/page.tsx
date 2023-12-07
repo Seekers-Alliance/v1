@@ -51,7 +51,7 @@ interface OpenPackButtonProps {
 }
 
 function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
-  const [status, setStatus] = useState(OpenStatus.AfterOpen);
+  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -59,7 +59,8 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
   const [requestId, setRequestId] = useState<bigint | undefined>(undefined);
   const router = useRouter();
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
-  const [waitingMsg, setWaitingMsg] = useState<string>('unknown');
+  const [waitingMsg, setWaitingMsg] = useState<string>();
+  const [completeHash, setCompleteHash] = useState<string | undefined>('0x445f4274aef2f538287cce24663922e0d2ad3bf9a22c1e9c7acebe19e272aff1')
   const {
     hash,
     submit,
@@ -97,8 +98,9 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
   }, []);
 
   const handleAfterOpening = useCallback(() => {
-    router.push('/open-pack/opening');
-  }, [submit]);
+    const url= `/open-pack/opening?hash=${completeHash}`;
+    router.push(url);
+  }, [completeHash]);
 
   useEffect(() => {
     handleTxnResponse(
