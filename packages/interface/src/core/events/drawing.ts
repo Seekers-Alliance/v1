@@ -18,7 +18,7 @@ export function filterDrawingEvents(
   logs: Log[]
 ): EventData<DrawingEvent> | null {
   const abi = parseAbi([
-      'event RequestSent(uint256 requestId, address _requester)',
+      'event RequestSent(uint256 requestId, address requester)',
     'event SetUnitPool(uint32 unitPoolID)',
     'event SetDrawingPool(uint32 drawingPoolID)',
     'event RequestCompleted(uint256 indexed requestId, address indexed requester)',
@@ -100,8 +100,8 @@ export function mappingRequestSentParams(
 ): RequestSentParams {
   return {
     //@ts-ignore
-    requestId: a._requestId,
+    requestId: a.requestId,
     //@ts-ignore
-    requester: a._requester,
+    requester: a.requester,
   } as RequestSentParams;
 }
