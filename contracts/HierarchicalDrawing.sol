@@ -24,7 +24,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     uint32 constant UINT32_MAX = type(uint32).max;
     uint256 constant UINT256_MAX = type(uint256).max;
 
-    IERC1155_UNIQUE public nftContract;
+    IMyNFT public nftContract;
     IRandomWordsGenerator public vrfGenerator;
 
     bytes32 public constant SELLER_ROLE = keccak256("SELLER_ROLE");
@@ -87,7 +87,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     }
 
     function setNFTcontract(address _nftContract) external onlyOwner {
-        nftContract = IERC1155_UNIQUE(_nftContract);
+        nftContract = IMyNFT(_nftContract);
     }
 
     function setVRFGenerator(address _vrfGenerator) external onlyOwner {

@@ -2,7 +2,6 @@
 pragma solidity ^0.8.9;
 
 import "./PackedArray.sol";
-import "./IRandomWordsGenerator.sol";
 import "./IMyNFT.sol";
 
 interface IHierarchicalDrawing {

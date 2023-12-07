@@ -16,7 +16,7 @@ library PackedArray {
         if(_arr.length % 8 != 0) {
             rows ++;
         }
-
+        
         packedArray.result = new uint256[](rows);
         for(uint256 i;i<_arr.length;i++) {
             packedArray = set(packedArray, i, _arr[i]);
