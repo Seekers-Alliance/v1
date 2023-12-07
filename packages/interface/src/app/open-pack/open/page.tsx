@@ -8,16 +8,15 @@ import useTxnNotify from '@/hooks/useTxnNotify';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { TransactionAction } from '@/components/transaction';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
-import { useAddresses } from '@/hooks/useAddresses';
 import OpenStepsModal from "@/components/OpenStepsModal";
 import {filterDrawingEvents} from "@/core/events/drawing";
 import {RequestSentParams} from "@/core/types";
-import {parseAbi} from "viem";
-import {watchContractEvent} from "@wagmi/core";
 
 export default function Page() {
   const { address } = useAccount();
-  const { data } = useDrawingRead('usersDrawable', [address, 0]);
+  const packId = 10;
+  const specialPackId = 11;
+  const { data } = useDrawingRead('usersDrawable', [address, packId]);
   const [poolAmount, setPoolAmount] = useState<number>(0);
   const packAmount = useMemo(() => {
     return poolAmount / 5;
@@ -32,10 +31,10 @@ export default function Page() {
       <div className='fixed left-[529px] top-[486px]'>
         <div className='flex h-[140px] w-[383px] flex-col justify-between gap-4'>
           <OpenPackButton
-            packId={0}
+            packId={packId}
             poolAmount={poolAmount}
           >{`OPEN ${packAmount} PACKS*`}</OpenPackButton>
-          <OpenPackButton packId={1} poolAmount={1}>
+          <OpenPackButton packId={specialPackId} poolAmount={1}>
             {'OPEN SPECIAL PACK'}
           </OpenPackButton>
         </div>

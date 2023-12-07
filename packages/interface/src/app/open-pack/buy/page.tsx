@@ -26,12 +26,14 @@ export default function Page() {
     return `https://ccip.chain.link/msg/${messageId}`;
   }, [messageId]);
   console.log(`messageLink`, messageLink)
+  const packId=10
   const { data: packPrice, error } = usePackPrice(
-    0,
+      packId,
     getChainId(networkList[selectedNetwork])
   );
   console.log(`packPrice`, packPrice);
   console.log(`packPrice error`, error);
+  console.log(`selectedAmount`, amountList[selectedAmount]);
   const nativeCoin = useMemo(() => {
     switch (networkList[selectedNetwork]) {
       case 'AVALANCHE':
@@ -128,7 +130,7 @@ export default function Page() {
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
             <BuyStatusButton
-              packId={0}
+              packId={packId}
               network={networkList[selectedNetwork]}
               amount={amountList[selectedAmount]}
               price={packPrice?.native || BigInt(0)}
