@@ -1,7 +1,7 @@
 'use client';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '@/components/Button';
-import { useAccount, useNetwork, useSwitchNetwork } from 'wagmi';
+import {useAccount, useContractEvent, useNetwork, usePublicClient, useSwitchNetwork} from 'wagmi';
 import { useRouter } from 'next/navigation';
 import useDrawingRead from '@/hooks/useDrawingRead';
 import useTxnNotify from '@/hooks/useTxnNotify';
@@ -9,8 +9,11 @@ import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { TransactionAction } from '@/components/transaction';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import { useAddresses } from '@/hooks/useAddresses';
-import OpenStepModal from "@/components/OpenStepModal";
+import OpenStepsModal from "@/components/OpenStepsModal";
 import {filterDrawingEvents} from "@/core/events/drawing";
+import {RequestSentParams} from "@/core/types";
+import {parseAbi} from "viem";
+import {watchContractEvent} from "@wagmi/core";
 
 export default function Page() {
   const { address } = useAccount();
@@ -48,15 +51,15 @@ interface OpenPackButtonProps {
 }
 
 function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
-  const { marketplaceReceiverAddress } = useAddresses();
-  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
+  const [status, setStatus] = useState(OpenStatus.AfterOpen);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
   const [openModalVisible, setOpenModalVisible] = useState(false);
-  const [requestId, setRequestId] = useState<string | null>(null);
+  const [requestId, setRequestId] = useState<bigint | undefined>(undefined);
   const router = useRouter();
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
+  const [waitingMsg, setWaitingMsg] = useState<string>('unknown');
   const {
     hash,
     submit,
@@ -80,13 +83,14 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
 
   const handleOpenPack = useCallback(() => {
     console.log('open');
+    setOpenModalVisible(true)
     submit?.({ args: [[packId], [poolAmount]] });
     // setStatus(OpenStatus.WaitingForRandomWords);
   }, [submit]);
 
   const handleOpenPopup = useCallback(() => {
     setOpenModalVisible(true)
-    setStatus(OpenStatus.AfterOpen)
+    // setStatus(OpenStatus.AfterOpen)
   }, []);
   const handleClosePopup = useCallback(() => {
     setOpenModalVisible(false)
@@ -137,10 +141,9 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
         'RequestSent',
         confirmData.logs
       );
-      console.log(`event: ${event}`);
+      console.log(`event:`,event);
       if (event) {
-        //@ts-ignore
-        setRequestId(event.args.requestId);
+        setRequestId((event.args as RequestSentParams).requestId);
         setStatus(OpenStatus.WaitingForRandomWords);
         //@ts-ignore
         console.log(`requestId: ${event.args.requestId}`);
@@ -148,6 +151,21 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
     }
   }, [confirmData]);
 
+  useEffect(() => {
+    switch (status) {
+      case OpenStatus.WaitingForRandomWords:
+        setWaitingMsg('waiting for random words');
+        break;
+      case OpenStatus.WaitingForExecution:
+        setWaitingMsg('waiting for execution');
+        break;
+      case OpenStatus.AfterOpen:
+        setWaitingMsg('see cards');
+        break;
+      default:
+        setWaitingMsg('unknown');
+    }
+  }, [status]);
   switch (status) {
     case OpenStatus.BeforeOpen:
       return (
@@ -164,19 +182,19 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
             </PrimaryButton>
           </>
       );
-    case OpenStatus.RandomWordsReceived:
+    case OpenStatus.WaitingForExecution:
     case OpenStatus.WaitingForRandomWords:
       return (
           <>
             {contextHolder}
             <PrimaryButton onClick={handleOpenPopup}>
-              WAITING
+              {waitingMsg}
             </PrimaryButton>
-            <OpenStepModal open={openModalVisible} onOk={handleClosePopup} onCancel={handleClosePopup}/>
+            <OpenStepsModal requestId={requestId} open={openModalVisible} onOk={handleClosePopup} onCancel={handleClosePopup}/>
           </>
       );
     case OpenStatus.AfterOpen:
-      return <PrimaryButton onClick={handleAfterOpening}>SEE CARDS</PrimaryButton>;
+      return <PrimaryButton onClick={handleAfterOpening}>{waitingMsg}</PrimaryButton>;
   }
 }
 
@@ -184,6 +202,6 @@ enum OpenStatus {
   BeforeOpen,
   Open,
   WaitingForRandomWords,
-    RandomWordsReceived,
+    WaitingForExecution,
   AfterOpen,
 }
