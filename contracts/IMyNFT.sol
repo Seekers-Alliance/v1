@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.9;
+pragma solidity ^0.8.20;
 
 interface IMyNFT {
     function mint(address _account, uint256 _id, uint256 _amount, bytes memory data) external;
