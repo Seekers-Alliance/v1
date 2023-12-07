@@ -39,12 +39,14 @@ export default function Page() {
     let cost = '0';
     let coin = nativeCoin;
     if (selectedToken === 0) {
+      coin = nativeCoin;
       cost = formatAmount(
         (packPrice?.native || BigInt(0)) * BigInt(amountList[selectedAmount]),
         18,
         4
       );
     } else {
+        coin = 'USDT';
       cost = formatAmount(
         (packPrice?.usdt || BigInt(0)) * BigInt(amountList[selectedAmount]),
         6,
@@ -129,7 +131,7 @@ export default function Page() {
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
-              <Link href={generateCCIPLink(marketplaceReceiverAddress)}>
+              <Link href={generateCCIPLink(marketplaceReceiverAddress)} target={'_blank'}>
                 <img src={'/External-Link.svg'} />
               </Link>
             </div>
