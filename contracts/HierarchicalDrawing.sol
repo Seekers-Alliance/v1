@@ -25,7 +25,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     uint256 constant UINT256_MAX = type(uint256).max;
 
     IMyNFT public nftContract;
-    IRandomWordsGenerator public vrfGenerator;
+    IVRFManager public vrfGenerator;
 
     bytes32 public constant SELLER_ROLE = keccak256("SELLER_ROLE");
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
@@ -91,7 +91,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     }
 
     function setVRFGenerator(address _vrfGenerator) external onlyOwner {
-        vrfGenerator = IRandomWordsGenerator(_vrfGenerator);
+        vrfGenerator = IVRFManager(_vrfGenerator);
         _grantRole(FULFILLER_ROLE, _vrfGenerator);
     }
 
@@ -409,12 +409,67 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return pooledResult;
     }
 
+    function getTokenPoolInfo() public view returns(uint256[] memory) {
+        return (ids);
+    }
+
+    function getTokenMaxAmounts() public view returns(uint32[] memory) {
+        return (maxAmounts);
+    }
+
+    function getTokenRemainings() public view returns(uint32[] memory) {
+        return (remainings);
+    }
+
+    function getTokenInfo(uint256 _id) public view returns(bool, uint256, uint32, uint32) {
+        for(uint256 i;i<ids.length;i++) {
+            if(ids[i] == _id) {
+                return(true, i, maxAmounts[i], remainings[i]);
+            }
+        }
+        return (false, 0,0,0);
+    }
+
+    function getExistedAtomic() public view returns(uint32[] memory) {
+        return existedUnit;
+    }
+    
+    function getExistedDrawingPool() public view returns(uint32[] memory) {
+        return existedDrawing;
+    }
+    
+    function getTokenSupply(uint256 _id) public view returns(uint256) {
+        return nftContract.totalSupply(_id);
+    }
+
+    function getUnitPoolInfo(uint32 _unitID) public view returns(uint32[] memory, PackedArray.PackedArray32 memory) {
+        UnitPoolInfo memory unit = unitPoolsInfo[_unitID];
+        return (unit.probs, unit.tree);
+    }
+
+    function getPoolInfo(uint32 _poolID) public view returns(uint32[] memory, uint32[] memory, uint32[] memory) {
+        DrawingPoolInfo memory pool = drawingPoolsInfo[_poolID];
+        return (pool.units, pool.probs, pool.accumulatedProbs);
+    }
+
     function pendingRequestNum() public view returns(uint256) {
         return (requestsQueue.length - requestNonce);
     }
 
     function getUserDrawable(address _user, uint32 _poolID) external view returns(uint32) {
         return usersDrawable[_user][_poolID];
+    }
+
+    function getReuqestQueue() public view returns(uint256[] memory) {
+        return requestsQueue;
+    }
+
+    function getLastRequestId() public view returns(uint256) {
+        return requestsQueue[requestNonce];
+    }
+
+    function getRequestInfo(uint256 _requestId) public view returns(RequestInfo memory) {
+        return requestsInfo[_requestId];
     }
 
     function getAccumulatedArr(uint32[] memory _arr) internal pure returns(uint32[] memory result) {
@@ -461,36 +516,6 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
             mintAmounts[curIndex] ++;
         }
         return (mintIDs, mintAmounts);
-    }
-
-    function quickSort(uint256[] memory _arr, uint256 _left, uint256 _right) internal pure returns (uint256[] memory) {
-        uint256[] memory _sortedArr = _arr;
-        if(_left >= _right) return _sortedArr; 
-        uint256 i = _left;
-        uint256 j = _right;
-        uint256 key = _sortedArr[_left];    
-        
-        while(i != j) {
-            while(_sortedArr[j] > key && i < j) {
-                j -= 1;
-            }
-            while (_sortedArr[i] <= key && i < j) {
-                i += 1;
-            }
-            if (i < j) {
-                uint256 tmp = _sortedArr[i];
-                _sortedArr[i] = _sortedArr[j];
-                _sortedArr[j] = tmp;
-            }
-        }              
-
-        _sortedArr[_left] = _sortedArr[i];
-        _sortedArr[i] = key;
-
-        _sortedArr = quickSort(_sortedArr, _left, i-1);
-        _sortedArr = quickSort(_sortedArr, i+1, _right);
-
-        return _sortedArr;
     }
 
     function pop(uint32[] storage _arr, uint32 _id) internal {

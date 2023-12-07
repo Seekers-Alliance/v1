@@ -3,6 +3,7 @@ pragma solidity ^0.8.9;
 
 import "./PackedArray.sol";
 import "./IMyNFT.sol";
+import "./IVRFManager.sol";
 
 interface IHierarchicalDrawing {
     struct UnitPoolInfo {
