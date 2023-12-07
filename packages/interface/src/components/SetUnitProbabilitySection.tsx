@@ -57,7 +57,7 @@ export default function SetUnitProbabilitySection({
       });
       return;
     }
-    submit?.({ args: [probabilityList] });
+    submit?.({ args: [probabilityList.map((i)=>i*10)] });
   }, [poolName, add, probabilityList]);
   const handleUpdateProbability = useCallback(
     (index: number, value: number) => {

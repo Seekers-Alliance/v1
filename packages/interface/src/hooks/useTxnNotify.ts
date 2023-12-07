@@ -18,6 +18,15 @@ export default function useTxnNotify() {
     },
     [api]
   );
+  const openNotificationSimple = useCallback(
+      (title: string,) => {
+        api.open({
+          message: title,
+          duration: 3,
+        });
+      },
+      [api]
+  );
 
   const handleTxnResponse = useCallback(
     (
@@ -36,10 +45,10 @@ export default function useTxnNotify() {
         openNotification(title, msg);
       }
       if (isSuccess) {
-        openNotification(title, description);
+        openNotificationSimple(title);
       }
     },
-    [openNotification]
+    [openNotification,openNotificationSimple]
   );
   return { handleTxnResponse, api, contextHolder };
 }
