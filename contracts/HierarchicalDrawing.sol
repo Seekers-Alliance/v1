@@ -18,6 +18,19 @@ error DrwaingPoolNotExist(uint32);
 error DrawableNotEnough(address, uint32);
 error RequestNotExist(uint256);
 
+// 0. Set ERC-1155 NFT contract, VRF Generator contract.
+// 1. setTokenPool and setTokenMaxAmount
+// 2. set Unit pool
+// 3. set Drawing pool
+// 4. NFT contract sets this contract as minter.
+// 5. Set seller role (EOA or Marketplace contract).
+// 6. Set fulfiller role (VRF Generator).
+// 7. Set executor role (EOA or Automation contract).
+// 6. Set Pause disable to start.
+// 7. After user bought pack -> call setUserDrawable
+// 8. User sends request to open the pack -> append the request to the queue -> VRF fulfilled and stored in request struct.
+// 9. Executor call execRequest to execute the request.
+
 contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     using SafeMath for uint32;
     using SafeMath for uint256;
