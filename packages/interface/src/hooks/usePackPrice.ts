@@ -67,9 +67,9 @@ export default function usePackPrice(
     ...reads,
     data: {
       //@ts-ignore
-      native: BigInt(reads.data[0].result),
+      native: BigInt(reads.data[0].result || 0),
       //@ts-ignore
-      usdt: BigInt(reads.data[1].result),
+      usdt: BigInt(reads.data[1].result || 0),
     },
   };
 }
