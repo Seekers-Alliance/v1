@@ -20,6 +20,7 @@
     "@visx/mock-data": "^3.3.0",
     "@visx/scale": "^3.5.0",
     "@visx/shape": "^3.5.0",
+    "@wagmi/core": "^1.4.8",
     "abitype": "^0.10.2",
     "antd": "^5.11.1",
     "bignumber.js": "^9.1.2",

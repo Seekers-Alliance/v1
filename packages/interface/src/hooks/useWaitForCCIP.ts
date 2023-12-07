@@ -15,6 +15,7 @@ import {
 import { getEvent } from '@/core/events/event';
 import { useAddresses } from '@/hooks/useAddresses';
 import { MessageReceivedParams } from '@/core/types';
+import useWatchMarketplaceEvent from "@/hooks/useWatchMarketplaceEvent";
 
 export default function useWaitForCCIP(
   chainId: number,
@@ -28,7 +29,6 @@ export default function useWaitForCCIP(
   const [isSuccess, setIsSuccess] = useState(false);
   const [isError, setIsError] = useState(false);
   const [receiverHash, setReceiverHash] = useState<Hash | null>(null);
-
   const {
     data: senderReceipt,
     isLoading: isSenderLoading,
@@ -47,35 +47,15 @@ export default function useWaitForCCIP(
     },
     [messageIdRef.current]
   );
-  const handleReceived = useCallback(
-    (log: any) => {
-      if (checkReceived(log)) {
-        setReceiverHash(log.transactionHash);
-        setError(null);
-        setIsSuccess(true);
-        setIsLoading(false);
-      }
+  const filter = useCallback(
+    (event: any) => {
+      return event.args.messageId === messageIdRef.current;
     },
-    [checkReceived]
+    [messageIdRef.current]
   );
-  console.log('handleReceived', handleReceived);
-  const unwatch = useContractEvent({
-    address: marketplaceReceiverAddress,
-    abi: parseAbi([
-      'event MessageReceived(bytes32 indexed messageId,uint64 indexed sourceChainSelector)',
-    ]),
-    eventName: 'MessageReceived',
-    listener(log) {
-      console.log('MessageReceived log', log);
-      if (checkReceived(log)) {
-        unwatch?.();
-        handleReceived(log);
-      }
-    },
-    chainId: chainId,
-  });
-  console.log('unwatch', unwatch);
+  const {event,stopWatch} = useWatchMarketplaceEvent('MessageReceived',filter)
   console.log('messageIdRef', messageIdRef.current);
+  console.log('event', event);
   useEffect(() => {
     if (senderReceipt) {
       const event = filterMarketplaceEvents('MessageSent', senderReceipt.logs);
@@ -104,6 +84,16 @@ export default function useWaitForCCIP(
       setIsLoading(true);
     }
   }, [senderError, isSenderLoading]);
+  useEffect(() => {
+    if (event){
+        setReceiverHash(event.transactionHash)
+      setIsSuccess(true);
+        setIsLoading(false);
+        setError(null);
+        setIsError(false);
+      stopWatch()
+    }
+  }, [event,stopWatch]);
   return {
     messageId: messageIdRef.current,
     isLoading,

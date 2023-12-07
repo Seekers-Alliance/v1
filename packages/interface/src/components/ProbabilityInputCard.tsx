@@ -31,6 +31,7 @@ export default function ProbabilityInputCard({
               className='border-0 bg-[#111827] text-white'
               onChange={onChange}
               defaultValue={defaultValue || 0}
+              precision={1}
             />
             <div className='text-white'>%</div>
           </div>

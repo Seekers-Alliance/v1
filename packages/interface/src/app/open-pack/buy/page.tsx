@@ -21,12 +21,19 @@ export default function Page() {
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedToken, setSelectedToken] = useState(0);
   const [selectedAmount, setSelectedAmount] = useState(0);
+  const [messageId, setMessageId] = useState<string | undefined>(undefined);
+  const messageLink= useMemo(() => {
+    return `https://ccip.chain.link/msg/${messageId}`;
+  }, [messageId]);
+  console.log(`messageLink`, messageLink)
+  const packId=10
   const { data: packPrice, error } = usePackPrice(
-    0,
+      packId,
     getChainId(networkList[selectedNetwork])
   );
   console.log(`packPrice`, packPrice);
   console.log(`packPrice error`, error);
+  console.log(`selectedAmount`, amountList[selectedAmount]);
   const nativeCoin = useMemo(() => {
     switch (networkList[selectedNetwork]) {
       case 'AVALANCHE':
@@ -39,12 +46,14 @@ export default function Page() {
     let cost = '0';
     let coin = nativeCoin;
     if (selectedToken === 0) {
+      coin = nativeCoin;
       cost = formatAmount(
         (packPrice?.native || BigInt(0)) * BigInt(amountList[selectedAmount]),
         18,
         4
       );
     } else {
+        coin = 'USDT';
       cost = formatAmount(
         (packPrice?.usdt || BigInt(0)) * BigInt(amountList[selectedAmount]),
         6,
@@ -53,7 +62,9 @@ export default function Page() {
     }
     return `${cost} ${coin}`;
   }, [packPrice, nativeCoin, selectedToken, selectedAmount]);
-
+  const handleMessageId = useCallback((messageId: string) => {
+    setMessageId(messageId);
+  }, []);
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -119,17 +130,18 @@ export default function Page() {
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
           <div className='w-[83%]'>
             <BuyStatusButton
-              packId={0}
+              packId={packId}
               network={networkList[selectedNetwork]}
               amount={amountList[selectedAmount]}
               price={packPrice?.native || BigInt(0)}
+                onMessageId={handleMessageId}
             >
               BUY | {`${totalCost}`}
             </BuyStatusButton>
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
-              <Link href={generateCCIPLink(marketplaceReceiverAddress)}>
+              <Link href={messageLink} target={'_blank'}>
                 <img src={'/External-Link.svg'} />
               </Link>
             </div>
@@ -164,6 +176,7 @@ enum BuyStatus {
 }
 
 interface BuyStatusButtonProps {
+  onMessageId?: (messageId: string) => void;
   packId: number;
   price: bigint;
   amount: number;
@@ -176,6 +189,7 @@ function BuyStatusButton({
   amount,
   packId,
   price,
+                           onMessageId,
   children,
 }: BuyStatusButtonProps) {
   const { marketplaceReceiverAddress } = useAddresses();
@@ -188,7 +202,7 @@ function BuyStatusButton({
     undefined
   );
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
-  const { isSuccess } = useWaitForCCIP(11155111, senderHash);
+  const { isSuccess,isLoading:isCCIPLoading,isError,error,messageId,receiverHash } = useWaitForCCIP(11155111, senderHash);
   const {
     hash,
     submit,
@@ -305,7 +319,12 @@ function BuyStatusButton({
       }
     }
   }, [status, isConnected, chain, network]);
-
+  useEffect(() => {
+    if (messageId){
+      console.log(`messageId`, messageId)
+      onMessageId?.(messageId);
+    }
+  }, [messageId]);
   switch (status) {
     case BuyStatus.BeforeBuy:
       return (
