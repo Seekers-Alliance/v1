@@ -72,7 +72,7 @@ export default function useWaitForCCIP(
         handleReceived(log);
       }
     },
-    chainId: chainId,
+    chainId: 43113,
   });
   console.log('unwatch', unwatch);
   console.log('messageIdRef', messageIdRef.current);
