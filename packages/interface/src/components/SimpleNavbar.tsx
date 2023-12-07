@@ -8,7 +8,7 @@ export default function SimpleNavbar() {
     },
     {
       name: 'OPEN PACKS',
-      link: '/open-pack/buy',
+      link: '/open-pack/open',
     },
     {
       name: 'MY PACKS',

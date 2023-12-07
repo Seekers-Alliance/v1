@@ -21,6 +21,11 @@ export default function Page() {
   const [selectedNetwork, setSelectedNetwork] = useState(0);
   const [selectedToken, setSelectedToken] = useState(0);
   const [selectedAmount, setSelectedAmount] = useState(0);
+  const [messageId, setMessageId] = useState<string | undefined>(undefined);
+  const messageLink= useMemo(() => {
+    return `https://ccip.chain.link/msg/${messageId}`;
+  }, [messageId]);
+  console.log(`messageLink`, messageLink)
   const { data: packPrice, error } = usePackPrice(
     0,
     getChainId(networkList[selectedNetwork])
@@ -55,7 +60,9 @@ export default function Page() {
     }
     return `${cost} ${coin}`;
   }, [packPrice, nativeCoin, selectedToken, selectedAmount]);
-
+  const handleMessageId = useCallback((messageId: string) => {
+    setMessageId(messageId);
+  }, []);
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -125,13 +132,14 @@ export default function Page() {
               network={networkList[selectedNetwork]}
               amount={amountList[selectedAmount]}
               price={packPrice?.native || BigInt(0)}
+                onMessageId={handleMessageId}
             >
               BUY | {`${totalCost}`}
             </BuyStatusButton>
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
-              <Link href={generateCCIPLink(marketplaceReceiverAddress)} target={'_blank'}>
+              <Link href={messageLink} target={'_blank'}>
                 <img src={'/External-Link.svg'} />
               </Link>
             </div>
@@ -166,6 +174,7 @@ enum BuyStatus {
 }
 
 interface BuyStatusButtonProps {
+  onMessageId?: (messageId: string) => void;
   packId: number;
   price: bigint;
   amount: number;
@@ -178,6 +187,7 @@ function BuyStatusButton({
   amount,
   packId,
   price,
+                           onMessageId,
   children,
 }: BuyStatusButtonProps) {
   const { marketplaceReceiverAddress } = useAddresses();
@@ -190,7 +200,7 @@ function BuyStatusButton({
     undefined
   );
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
-  const { isSuccess } = useWaitForCCIP(11155111, senderHash);
+  const { isSuccess,isLoading:isCCIPLoading,isError,error,messageId,receiverHash } = useWaitForCCIP(11155111, senderHash);
   const {
     hash,
     submit,
@@ -307,7 +317,12 @@ function BuyStatusButton({
       }
     }
   }, [status, isConnected, chain, network]);
-
+  useEffect(() => {
+    if (messageId){
+      console.log(`messageId`, messageId)
+      onMessageId?.(messageId);
+    }
+  }, [messageId]);
   switch (status) {
     case BuyStatus.BeforeBuy:
       return (
