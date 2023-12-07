@@ -19,14 +19,6 @@ export default function Page({ params }: { params: { slug: string } }) {
     hash: slug as `0x${string}`,
     chainId: 43113,
   });
-  const toOpensea = useCallback(() => {
-    router.push(
-      'https://testnets.opensea.io/zh-TW/collection/seekers-alliance'
-    );
-  }, [router]);
-  const toVRF = useCallback(() => {
-    router.push('https://vrf.chain.link/fuji/822');
-  }, [router]);
 
   useEffect(() => {
     if (error) {
@@ -65,7 +57,8 @@ export default function Page({ params }: { params: { slug: string } }) {
       <div className='fixed left-[650px] top-[51px]'>
         <div className='flex flex-row gap-4'>
           <div className='h-[60px] w-[250px]'>
-            <NavButton onClick={toOpensea}>
+            <NavButton >
+              <a href={'https://testnets.opensea.io/account?search[collections][0]=seekers-alliance'} target={'_blank'}>
               <div className='inline-flex items-center gap-4'>
                 <span>View NFTs on OpenSea</span>
                 <span>
@@ -80,10 +73,12 @@ export default function Page({ params }: { params: { slug: string } }) {
                   />
                 </span>
               </div>
+              </a>
             </NavButton>
           </div>
           <div className='h-[60px] w-[420px]'>
-            <NavButton onClick={toVRF}>
+            <NavButton>
+                <a href={'https://vrf.chain.link/fuji/822'} target={'_blank'}>
               <div className='inline-flex items-center gap-4'>
                 <span>CHAINLINK VRF TRANSACTION ID TO PROVE FAIRNESS</span>
                 <span>
@@ -98,6 +93,7 @@ export default function Page({ params }: { params: { slug: string } }) {
                   />
                 </span>
               </div>
+                </a>
             </NavButton>
           </div>
         </div>
