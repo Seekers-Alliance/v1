@@ -69,7 +69,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         drawingContract = IHierarchicalDrawing(_contract);
     }
 
-    // Assumes the subscription is funded sufficiently.
+    // ### CHAINLINK PRODUCT: VRF ###  
     function requestRandomWords(address _requester) external onlyRequester returns(uint256 requestId){
         // Will revert if subscription is not set and funded.
         requestId = COORDINATOR.requestRandomWords(
@@ -92,6 +92,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         return requestId;
     }
 
+    // ### CHAINLINK PRODUCT: VRF ###  
     function fulfillRandomWords(
         uint256 _requestId,
         uint256[] memory _randomWords
@@ -101,7 +102,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         s_requests[_requestId].randomWords = _randomWords;
         
         drawingContract.fulfillRandomWords(_requestId, _randomWords);
-        // emit RequestFulfilled(_requestId, _randomWords);
+        emit RequestFulfilled(_requestId, _randomWords);
     }
 
     function getRequestStatus(
