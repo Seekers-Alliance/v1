@@ -16,7 +16,10 @@ export default function SetPoolCountSection({
   onLoading,
 }: SetPoolCountSectionProps) {
   const { tokenList } = useTokenList();
-  const [countList, setCountList] = React.useState<bigint[]>([]);
+  const [countList, setCountList] = React.useState<bigint[]>(
+      Array.from({ length: 7 }, () => BigInt(0))
+  );
+  console.log(countList)
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const handleUpdateCount = useCallback(
     (index: number, value: string) => {
