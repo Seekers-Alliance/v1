@@ -16,7 +16,6 @@ import Link from 'next/link';
 import { getConfig } from '@/config';
 
 export default function Page() {
-  const { marketplaceReceiverAddress } = useAddresses();
   const { packId } = getConfig();
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
   const amountList = [1, 5, 10, 15, 20, 25];
@@ -24,10 +23,22 @@ export default function Page() {
   const [selectedToken, setSelectedToken] = useState(0);
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [messageId, setMessageId] = useState<string | undefined>(undefined);
+  const [senderHash, setSenderHash] = useState<`0x${string}` | undefined>(undefined);
   const messageLink = useMemo(() => {
     return `https://ccip.chain.link/msg/${messageId}`;
   }, [messageId]);
+  const hashLink = useMemo(() => {
+    switch (networkList[selectedNetwork]) {
+        case 'AVALANCHE':
+            return `https://testnet.snowtrace.io/tx/${senderHash}`;
+        case 'ETHEREUM':
+            return `https://sepolia.etherscan.io/tx/${senderHash}`;
+        case 'OPTIMISM':
+            return `https://goerli-optimism.etherscan.io/tx/${senderHash}`;
+    }
+  }, [senderHash, selectedNetwork,networkList]);
   console.log(`messageLink`, messageLink);
+  console.log(`hashLink`, hashLink);
   const { data: packPrice, error } = usePackPrice(
     packId,
     getChainId(networkList[selectedNetwork])
@@ -66,6 +77,21 @@ export default function Page() {
   const handleMessageId = useCallback((messageId: string) => {
     setMessageId(messageId);
   }, []);
+  const handleSenderHash = useCallback((hash: `0x${string}`) => {
+    setSenderHash(hash);
+  }, []);
+  console.log(`senderHash`, senderHash);
+  console.log(`!!!!!!!!!!!!`, senderHash);
+  const scanLogo = useMemo(() => {
+    switch (networkList[selectedNetwork]) {
+      case 'AVALANCHE':
+        return '/avalanche-avax-logo.svg';
+      case 'ETHEREUM':
+        return '/etherscan-logo.svg';
+      case 'OPTIMISM':
+        return '/optimism-logo.svg';
+    }
+  },[selectedNetwork,networkList]);
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -129,21 +155,29 @@ export default function Page() {
       </div>
       <div className='fixed left-[767px] top-[530px]'>
         <div className='flex h-[60px] w-[465px] flex-row justify-between gap-2'>
-          <div className='w-[83%]'>
+          <div className='w-[69%]'>
             <BuyStatusButton
               packId={packId}
               network={networkList[selectedNetwork]}
               amount={amountList[selectedAmount]}
               price={packPrice?.native || BigInt(0)}
               onMessageId={handleMessageId}
+              onSenderHash={handleSenderHash}
             >
               BUY | {`${totalCost}`}
             </BuyStatusButton>
           </div>
           <div className='w-[14%]'>
             <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
+              <Link href={hashLink || ''} target={'_blank'}>
+                <img src={scanLogo} width={40} />
+              </Link>
+            </div>
+          </div>
+          <div className='w-[14%]'>
+            <div className='flex h-[100%] w-[100%] items-center justify-center rounded-[4px] bg-[#79FFF5]'>
               <Link href={messageLink} target={'_blank'}>
-                <img src={'/External-Link.svg'} />
+                <img src={'/CCIP.svg'} />
               </Link>
             </div>
           </div>
@@ -178,6 +212,7 @@ enum BuyStatus {
 
 interface BuyStatusButtonProps {
   onMessageId?: (messageId: string) => void;
+  onSenderHash?: (hash: `0x${string}`) => void;
   packId: number;
   price: bigint;
   amount: number;
@@ -192,6 +227,7 @@ function BuyStatusButton({
   price,
   onMessageId,
   children,
+    onSenderHash
 }: BuyStatusButtonProps) {
   const { marketplaceReceiverAddress } = useAddresses();
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
@@ -219,6 +255,7 @@ function BuyStatusButton({
         setSenderHash(hash);
         setStatus(BuyStatus.PendingBuy);
       }
+      onSenderHash?.(hash);
     },
     [network]
   );
