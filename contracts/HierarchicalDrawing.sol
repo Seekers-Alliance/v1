@@ -18,18 +18,11 @@ error DrwaingPoolNotExist(uint32);
 error DrawableNotEnough(address, uint32);
 error RequestNotExist(uint256);
 
-// 0. Set ERC-1155 NFT contract, VRF Generator contract.
-// 1. setTokenPool and setTokenMaxAmount
-// 2. set Unit pool
-// 3. set Drawing pool
-// 4. NFT contract sets this contract as minter.
-// 5. Set seller role (EOA or Marketplace contract).
-// 6. Set fulfiller role (VRF Generator).
-// 7. Set executor role (EOA or Automation contract).
-// 6. Set Pause disable to start.
-// 7. After user bought pack -> call setUserDrawable
-// 8. User sends request to open the pack -> append the request to the queue -> VRF fulfilled and stored in request struct.
-// 9. Executor call execRequest to execute the request.
+// This smart contract focuses on flexibility and long-term viability
+// and mitigates the problem of pull rates being dependent on the NFT supply counts.
+// We introduces a flexible hierarchical structure built upon the ERC-1155 standard, 
+// so that game developers can freely customize pool probabilities according to their game design
+// and launch updates and new releases while maintaining fair pull rates. 
 
 contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     using SafeMath for uint32;
@@ -44,7 +37,6 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     bytes32 public constant EXECUTOR_ROLE = keccak256("EXECUTOR_ROLE");
     bytes32 public constant FULFILLER_ROLE = keccak256("FULFILLER_ROLE");
     
-    bool public PAUSE;
     mapping (address => mapping (uint32 => uint32)) public usersDrawable;
     mapping (uint32 => UnitPoolInfo) public unitPoolsInfo;
     mapping (uint32 => DrawingPoolInfo) public drawingPoolsInfo;
@@ -61,7 +53,6 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     uint256[] public requestsQueue;
 
     constructor(address _initialAdmin) {
-        PAUSE = true;
         _grantRole(DEFAULT_ADMIN_ROLE, _initialAdmin);
     }
 
@@ -83,20 +74,6 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     modifier onlyFulfiller() {
         require(hasRole(FULFILLER_ROLE, msg.sender), "Restricted to fulfillers.");
         _;
-    }
-
-    modifier onlyPaused() {
-        require(PAUSE, "Contract is not paused");
-        _;
-    }
-
-    modifier onlyNotPaused() {
-        require(!PAUSE, "Contract is paused");
-        _;
-    }
-
-    function setPause(bool enable) external onlyOwner {
-        PAUSE = enable;
     }
 
     function setNFTcontract(address _nftContract) external onlyOwner {
@@ -260,7 +237,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return (_ids);
     }
 
-    function execRequestBatch() public /*onlyNotPaused*/ onlyExecutor {
+    function execRequestBatch() public onlyExecutor {
         uint256 pending = pendingRequestNum();
         for(uint256 i; i<pending;i++) {
             execRequest();
@@ -506,8 +483,11 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     }
 
     function count(uint256[] memory _sortedArr) internal pure returns(uint256[] memory, uint256[] memory) {
+        if(_sortedArr.length == 0) {
+            return(_sortedArr, _sortedArr);
+        }
+        
         uint256 uniqueIdNum = 1;
-
         for(uint256 i = 1; i < _sortedArr.length; i++) {
             if(_sortedArr[i] != _sortedArr[i-1]) {
                 uniqueIdNum ++;
