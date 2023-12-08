@@ -26,6 +26,7 @@ export default function SetPoolCountSection({
           throw new Error('value too large');
         }
         countList[index] = v;
+        console.log(countList)
         setCountList(countList);
       } catch (e) {
         console.log(e);
