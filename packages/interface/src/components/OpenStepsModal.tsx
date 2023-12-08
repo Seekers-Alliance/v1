@@ -129,7 +129,7 @@ export default function OpenStepsModal({
       onCancel={onCancel}
       footer={(_, { OkBtn, CancelBtn }) => (
         <>
-          <CancelBtn />
+          {/*<CancelBtn />*/}
           <OkBtn />
         </>
       )}
