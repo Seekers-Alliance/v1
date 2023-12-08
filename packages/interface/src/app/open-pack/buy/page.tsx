@@ -272,7 +272,7 @@ function BuyStatusButton({
 
       return;
     }
-  }, [status]);
+  }, [status,amount,packId,price,network]);
 
   const handleAfterBuy = useCallback(() => {
     if (status === BuyStatus.AfterBuy) {
