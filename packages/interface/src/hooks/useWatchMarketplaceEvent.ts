@@ -36,9 +36,10 @@ export default function useWatchMarketplaceEvent(
       return null;
     }
     const filtered = events.filter(filter);
-    // @ts-ignore
+
     const sorted = filtered.sort(
-      (a, b) => -1 * (a.blockNumber - b.blockNumber)
+      // @ts-ignore
+      (a, b) => b.blockNumber - a.blockNumber
     );
     return sorted[0];
   }, [client, address, fn]);
