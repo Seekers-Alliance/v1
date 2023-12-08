@@ -81,16 +81,6 @@ export default function SetPoolCountSection({
   }, [isConfirmError, isConfirmSuccess, confirmError]);
 
   useEffect(() => {
-    if (tokenList) {
-      setCountList(
-        (tokenList as bigint[]).map((i) => {
-          return BigInt(0);
-        })
-      );
-    }
-  }, [tokenList]);
-
-  useEffect(() => {
     onLoading?.(isLoading);
   }, [isLoading]);
   return (
