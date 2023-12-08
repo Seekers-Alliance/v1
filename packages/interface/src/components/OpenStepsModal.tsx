@@ -6,6 +6,7 @@ import useWaitForRequestCompleted from '@/hooks/useWaitForRequestCompleted';
 import { getConfig } from '@/config';
 
 interface OpenStepModalProps {
+  amount?: number;
   open: boolean;
   requestId?: bigint;
   onStatusChanged?: (status: StepStatus) => void;
@@ -15,6 +16,7 @@ interface OpenStepModalProps {
 }
 
 export default function OpenStepsModal({
+  amount = 0,
   requestId,
   onCompleted,
   open,
@@ -43,32 +45,40 @@ export default function OpenStepsModal({
   const item = useMemo(
     () => [
       {
-        title: <h1 className='text-lg text-white'>OPEN N PACKS</h1>,
+        title: <h1 className='text-lg text-white'>OPEN {amount} PACKS</h1>,
       },
       {
-        title: (
-          <h1 className='text-lg text-white'>
-            WAITING FOR RANDOM WORDS(
-            <a href={vrfUrl || ''} rel='noreferrer' target='_blank'>
-              Link
-            </a>
-            )
-          </h1>
+        title: <h1 className='text-lg text-white'>WAITING FOR RANDOM WORDS</h1>,
+        description: (
+          <a
+            className='text-white'
+            href={vrfUrl || ''}
+            rel='noreferrer'
+            target='_blank'
+          >
+            {'<Chainlink VRF Request Status>'}
+          </a>
         ),
       },
       {
         title: (
           <h1 className='text-lg text-white'>
-            RANDOM WORD RECEIVED, EXECUTE DRAWS(
-            <a href={automationUrl || ''} rel='noreferrer' target='_blank'>
-              Link
-            </a>
-            )
+            RANDOM WORD RECEIVED, EXECUTE DRAWS
           </h1>
+        ),
+        description: (
+          <a
+            className='text-white'
+            href={automationUrl || ''}
+            rel='noreferrer'
+            target='_blank'
+          >
+            {'<Chainlink Automation History>'}
+          </a>
         ),
       },
       {
-        title: <h1 className='text-lg text-white'>SEE CARDS</h1>,
+        title: <h1 className='text-lg text-white'>COMPLETE</h1>,
       },
     ],
     [fulfillHash, completeHash]
