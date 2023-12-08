@@ -5,7 +5,7 @@ const theme: ThemeConfig = {
     fontSize: 16,
     colorPrimary: '#1890ff',
     colorText: '#FFFFFF',
-    colorBgElevated:'rgb(75 85 99)',
+    colorBgElevated: 'rgb(75 85 99)',
     colorSplit: '#f0f0f0',
   },
   components: {

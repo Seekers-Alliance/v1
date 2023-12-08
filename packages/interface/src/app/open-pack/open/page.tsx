@@ -1,21 +1,28 @@
 'use client';
 import { ReactNode, useCallback, useEffect, useMemo, useState } from 'react';
 import { PrimaryButton } from '@/components/Button';
-import {useAccount, useContractEvent, useNetwork, usePublicClient, useSwitchNetwork} from 'wagmi';
+import {
+  useAccount,
+  useContractEvent,
+  useNetwork,
+  usePublicClient,
+  useSwitchNetwork,
+} from 'wagmi';
 import { useRouter } from 'next/navigation';
 import useDrawingRead from '@/hooks/useDrawingRead';
 import useTxnNotify from '@/hooks/useTxnNotify';
 import useDrawingTxn from '@/hooks/useDrawingTxn';
 import { TransactionAction } from '@/components/transaction';
 import { ConnectWalletButton } from '@/components/ConnectWalletButton';
-import OpenStepsModal from "@/components/OpenStepsModal";
-import {filterDrawingEvents} from "@/core/events/drawing";
-import {RequestSentParams} from "@/core/types";
-import {getConfig} from "@/config";
+import OpenStepsModal from '@/components/OpenStepsModal';
+import { filterDrawingEvents } from '@/core/events/drawing';
+import { RequestSentParams } from '@/core/types';
+import { getConfig } from '@/config';
 
 export default function Page() {
   const { address } = useAccount();
-  const {packId,specialPackId,drawingPoolId,specialDrawingPoolId}=getConfig()
+  const { packId, specialPackId, drawingPoolId, specialDrawingPoolId } =
+    getConfig();
   const { data } = useDrawingRead('usersDrawable', [address, drawingPoolId]);
   const [poolAmount, setPoolAmount] = useState<number>(0);
   const packAmount = useMemo(() => {
@@ -50,7 +57,7 @@ interface OpenPackButtonProps {
 }
 
 function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
-  const [status, setStatus] = useState(OpenStatus.WaitingForRandomWords);
+  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -59,7 +66,9 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
   const router = useRouter();
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const [waitingMsg, setWaitingMsg] = useState<string>();
-  const [completeHash, setCompleteHash] = useState<string | undefined>('0x445f4274aef2f538287cce24663922e0d2ad3bf9a22c1e9c7acebe19e272aff1')
+  const [completeHash, setCompleteHash] = useState<string | undefined>(
+    '0x445f4274aef2f538287cce24663922e0d2ad3bf9a22c1e9c7acebe19e272aff1'
+  );
   const {
     hash,
     submit,
@@ -83,21 +92,21 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
 
   const handleOpenPack = useCallback(() => {
     console.log('open');
-    setOpenModalVisible(true)
+    setOpenModalVisible(true);
     submit?.({ args: [[packId], [poolAmount]] });
     // setStatus(OpenStatus.WaitingForRandomWords);
   }, [submit]);
 
   const handleOpenPopup = useCallback(() => {
-    setOpenModalVisible(true)
+    setOpenModalVisible(true);
     // setStatus(OpenStatus.AfterOpen)
   }, []);
   const handleClosePopup = useCallback(() => {
-    setOpenModalVisible(false)
+    setOpenModalVisible(false);
   }, []);
 
   const handleAfterOpening = useCallback(() => {
-    const url= `/open-pack/opening?hash=${completeHash}`;
+    const url = `/open-pack/opening?hash=${completeHash}`;
     router.push(url);
   }, [completeHash]);
 
@@ -138,11 +147,8 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
 
   useEffect(() => {
     if (confirmData) {
-      const event = filterDrawingEvents(
-        'RequestSent',
-        confirmData.logs
-      );
-      console.log(`event:`,event);
+      const event = filterDrawingEvents('RequestSent', confirmData.logs);
+      console.log(`event:`, event);
       if (event) {
         setRequestId((event.args as RequestSentParams).requestId);
         setStatus(OpenStatus.WaitingForRandomWords);
@@ -176,26 +182,31 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
       );
     case OpenStatus.Open:
       return (
-          <>
-            {contextHolder}
-            <PrimaryButton loading={isLoading} onClick={handleOpenPack}>
-              {children}
-            </PrimaryButton>
-          </>
+        <>
+          {contextHolder}
+          <PrimaryButton loading={isLoading} onClick={handleOpenPack}>
+            {children}
+          </PrimaryButton>
+        </>
       );
     case OpenStatus.WaitingForExecution:
     case OpenStatus.WaitingForRandomWords:
       return (
-          <>
-            {contextHolder}
-            <PrimaryButton onClick={handleOpenPopup}>
-              {waitingMsg}
-            </PrimaryButton>
-            <OpenStepsModal requestId={requestId} open={openModalVisible} onOk={handleClosePopup} onCancel={handleClosePopup}/>
-          </>
+        <>
+          {contextHolder}
+          <PrimaryButton onClick={handleOpenPopup}>{waitingMsg}</PrimaryButton>
+          <OpenStepsModal
+            requestId={requestId}
+            open={openModalVisible}
+            onOk={handleClosePopup}
+            onCancel={handleClosePopup}
+          />
+        </>
       );
     case OpenStatus.AfterOpen:
-      return <PrimaryButton onClick={handleAfterOpening}>{waitingMsg}</PrimaryButton>;
+      return (
+        <PrimaryButton onClick={handleAfterOpening}>{waitingMsg}</PrimaryButton>
+      );
   }
 }
 
@@ -203,6 +214,6 @@ enum OpenStatus {
   BeforeOpen,
   Open,
   WaitingForRandomWords,
-    WaitingForExecution,
+  WaitingForExecution,
   AfterOpen,
 }

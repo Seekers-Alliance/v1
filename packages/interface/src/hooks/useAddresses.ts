@@ -1,5 +1,5 @@
 import { Address } from 'wagmi';
-import {getConfig} from "@/config";
+import { getConfig } from '@/config';
 
 export interface Addresses {
   drawingAddress: Address;
@@ -11,15 +11,13 @@ export interface Addresses {
 }
 
 export function useAddresses(): Addresses {
-  const config= getConfig();
+  const config = getConfig();
   return {
     drawingAddress: config.drawingAddress as Address,
     nftAddress: config.nftAddress as Address,
     vrfAddress: config.vrfAddress as Address,
     vrfManagerAddress: config.vrfManagerAddress as Address,
-    marketplaceSenderAddress:
-      config.marketplaceSenderAddress as Address,
-    marketplaceReceiverAddress:
-      config.marketplaceReceiverAddress as Address,
+    marketplaceSenderAddress: config.marketplaceSenderAddress as Address,
+    marketplaceReceiverAddress: config.marketplaceReceiverAddress as Address,
   };
 }

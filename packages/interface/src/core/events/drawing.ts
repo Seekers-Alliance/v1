@@ -2,7 +2,8 @@ import { decodeEventLog, Log, parseAbi } from 'viem';
 import { mappingEvent } from '@/core/events/event';
 import {
   EventData,
-  RequestCompletedParams, RequestSentParams,
+  RequestCompletedParams,
+  RequestSentParams,
   SetDrawingPoolParams,
   SetUnitPoolParams,
 } from '@/core/types';
@@ -11,14 +12,14 @@ type DrawingEvent =
   | SetUnitPoolParams
   | SetDrawingPoolParams
   | RequestCompletedParams
-    | RequestSentParams;
+  | RequestSentParams;
 
 export function filterDrawingEvents(
   event: string,
   logs: Log[]
 ): EventData<DrawingEvent> | null {
   const abi = parseAbi([
-      'event RequestSent(uint256 requestId, address requester)',
+    'event RequestSent(uint256 requestId, address requester)',
     'event SetUnitPool(uint32 unitPoolID)',
     'event SetDrawingPool(uint32 drawingPoolID)',
     'event RequestCompleted(uint256 indexed requestId, address indexed requester)',
@@ -94,9 +95,8 @@ export function mappingRequestCompletedParams(
   } as RequestCompletedParams;
 }
 
-
 export function mappingRequestSentParams(
-    a: readonly unknown[] | Record<string, unknown>
+  a: readonly unknown[] | Record<string, unknown>
 ): RequestSentParams {
   return {
     //@ts-ignore
