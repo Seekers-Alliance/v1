@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IHierarchicalDrawing.sol";
 import "./IVRFManager.sol";
 
-// 1. Adding consumer 
-// 2. topUpSubscription
+// This contract uses Chainlink product, VRF
+// We utilize the fulfilled random words to draw the tokenID from the defined pool. 
 
 contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessControl {    
     bytes32 public constant REQUESTER_ROLE = keccak256("REQUESTER_ROLE");
@@ -69,7 +69,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         drawingContract = IHierarchicalDrawing(_contract);
     }
 
-    // ### CHAINLINK PRODUCT: VRF ###  
+    // Takes request sender as the parameter and submits the request to the VRF coordinator contract.
     function requestRandomWords(address _requester) external onlyRequester returns(uint256 requestId){
         // Will revert if subscription is not set and funded.
         requestId = COORDINATOR.requestRandomWords(
@@ -92,7 +92,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         return requestId;
     }
 
-    // ### CHAINLINK PRODUCT: VRF ###  
+    // Receives random values and stores them in your drawing contract.
     function fulfillRandomWords(
         uint256 _requestId,
         uint256[] memory _randomWords
