@@ -30,6 +30,7 @@ export default function CountInputCard({
   );
   const handleClickInfinite = useCallback(() => {
     setIsInfinite(true);
+    onChange?.(MAX_UINT32.toString());
   }, [isInfinite]);
   return (
     <BaseCard
