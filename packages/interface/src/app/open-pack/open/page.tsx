@@ -40,8 +40,9 @@ export default function Page() {
           <OpenPackButton
             packId={packId}
             poolAmount={poolAmount}
+            packAmount={packAmount}
           >{`OPEN ${packAmount} PACKS*`}</OpenPackButton>
-          <OpenPackButton packId={specialPackId} poolAmount={5}>
+          <OpenPackButton packId={specialPackId} poolAmount={5} packAmount={1}>
             {'OPEN SPECIAL PACK'}
           </OpenPackButton>
         </div>
@@ -52,12 +53,18 @@ export default function Page() {
 
 interface OpenPackButtonProps {
   packId: number;
+  packAmount: number;
   poolAmount: number;
   children?: ReactNode;
 }
 
-function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
-  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
+function OpenPackButton({
+  packAmount,
+  packId,
+  poolAmount,
+  children,
+}: OpenPackButtonProps) {
+  const [status, setStatus] = useState(OpenStatus.WaitingForRandomWords);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
@@ -109,6 +116,13 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
     const url = `/open-pack/opening?hash=${completeHash}`;
     router.push(url);
   }, [completeHash]);
+
+  const handleComplete = useCallback((hash: `0x${string}`) => {
+    if (hash) {
+      setStatus(OpenStatus.AfterOpen);
+      setCompleteHash(hash);
+    }
+  }, []);
 
   useEffect(() => {
     handleTxnResponse(
@@ -200,6 +214,8 @@ function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
             open={openModalVisible}
             onOk={handleClosePopup}
             onCancel={handleClosePopup}
+            onCompleted={handleComplete}
+            amount={packAmount}
           />
         </>
       );

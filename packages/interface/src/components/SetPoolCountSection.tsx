@@ -17,9 +17,9 @@ export default function SetPoolCountSection({
 }: SetPoolCountSectionProps) {
   const { tokenList } = useTokenList();
   const [countList, setCountList] = React.useState<bigint[]>(
-      Array.from({ length: 7 }, () => BigInt(0))
+    Array.from({ length: 7 }, () => BigInt(0))
   );
-  console.log(countList)
+  console.log(countList);
   const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const handleUpdateCount = useCallback(
     (index: number, value: string) => {
@@ -29,7 +29,7 @@ export default function SetPoolCountSection({
           throw new Error('value too large');
         }
         countList[index] = v;
-        console.log(countList)
+        console.log(countList);
         setCountList(countList);
       } catch (e) {
         console.log(e);
