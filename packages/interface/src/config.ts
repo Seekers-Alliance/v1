@@ -16,6 +16,12 @@ export function getConfig() {
     marketplaceReceiverAddress:
       process.env.NEXT_PUBLIC_MARKETPALCE_RECEIVER_ADDRESS ||
       '0x1d163C7Fb8925a88EB0AC4042868F8248d60a107',
+    avaxUsdtAddress:
+      process.env.NEXT_PUBLIC_AVAX_USDT_ADDRESS ||
+      '0xae940284e4eB37Fec1F1Bf1D7f297EB1f07f2B26',
+    ethUsdtAddress:
+      process.env.NEXT_PUBLIC_ETH_USDT_ADDRESS ||
+      '0x4E85938b8cba54F4726A649b727c15Cca379b146',
     packId: Number(process.env.NEXT_PUBLIC_PACK_ID || 0),
     specialPackId: Number(process.env.NEXT_PUBLIC_SPECIAL_PACK_ID || 0),
     drawingPoolId: Number(process.env.NEXT_PUBLIC_DRAWING_POOL_ID || 0),

@@ -14,6 +14,10 @@ import { formatAmount } from '@/common';
 import useWaitForCCIP from '@/hooks/useWaitForCCIP';
 import Link from 'next/link';
 import { getConfig } from '@/config';
+import useCoinTxn from '@/hooks/useCoinTxn';
+import useCoinConfig from '@/hooks/useCoinConfig';
+import { useCoinAddress } from '@/hooks/useCoinAddress';
+import useCoinRead from '@/hooks/useCoinRead';
 
 export default function Page() {
   const { packId } = getConfig();
@@ -23,20 +27,22 @@ export default function Page() {
   const [selectedToken, setSelectedToken] = useState(0);
   const [selectedAmount, setSelectedAmount] = useState(0);
   const [messageId, setMessageId] = useState<string | undefined>(undefined);
-  const [senderHash, setSenderHash] = useState<`0x${string}` | undefined>(undefined);
+  const [senderHash, setSenderHash] = useState<`0x${string}` | undefined>(
+    undefined
+  );
   const messageLink = useMemo(() => {
     return `https://ccip.chain.link/msg/${messageId}`;
   }, [messageId]);
   const hashLink = useMemo(() => {
     switch (networkList[selectedNetwork]) {
-        case 'AVALANCHE':
-            return `https://testnet.snowtrace.io/tx/${senderHash}`;
-        case 'ETHEREUM':
-            return `https://sepolia.etherscan.io/tx/${senderHash}`;
-        case 'OPTIMISM':
-            return `https://goerli-optimism.etherscan.io/tx/${senderHash}`;
+      case 'AVALANCHE':
+        return `https://testnet.snowtrace.io/tx/${senderHash}`;
+      case 'ETHEREUM':
+        return `https://sepolia.etherscan.io/tx/${senderHash}`;
+      case 'OPTIMISM':
+        return `https://goerli-optimism.etherscan.io/tx/${senderHash}`;
     }
-  }, [senderHash, selectedNetwork,networkList]);
+  }, [senderHash, selectedNetwork, networkList]);
   console.log(`messageLink`, messageLink);
   console.log(`hashLink`, hashLink);
   const { data: packPrice, error } = usePackPrice(
@@ -54,6 +60,19 @@ export default function Page() {
         return 'ETH';
     }
   }, [selectedNetwork]);
+  const coin = useMemo(() => {
+    switch (selectedToken) {
+      case 0:
+        return nativeCoin;
+      case 1:
+        return 'USDT';
+      default:
+        return nativeCoin;
+    }
+  }, [selectedToken, nativeCoin]);
+  const isNative = useMemo(() => {
+    return selectedToken === 0;
+  }, [selectedToken]);
   const totalCost = useMemo(() => {
     let cost = '0';
     let coin = nativeCoin;
@@ -91,7 +110,7 @@ export default function Page() {
       case 'OPTIMISM':
         return '/optimism-logo.svg';
     }
-  },[selectedNetwork,networkList]);
+  }, [selectedNetwork, networkList]);
   const handleSelectNetwork = useCallback((index: number) => {
     return () => setSelectedNetwork(index);
   }, []);
@@ -163,6 +182,8 @@ export default function Page() {
               price={packPrice?.native || BigInt(0)}
               onMessageId={handleMessageId}
               onSenderHash={handleSenderHash}
+              coin={coin}
+              isNative={isNative}
             >
               BUY | {`${totalCost}`}
             </BuyStatusButton>
@@ -217,6 +238,8 @@ interface BuyStatusButtonProps {
   price: bigint;
   amount: number;
   network: string;
+  isNative: boolean;
+  coin: string;
   children?: ReactNode;
 }
 
@@ -226,10 +249,11 @@ function BuyStatusButton({
   packId,
   price,
   onMessageId,
+  coin,
+  isNative,
   children,
-    onSenderHash
+  onSenderHash,
 }: BuyStatusButtonProps) {
-  const { marketplaceReceiverAddress } = useAddresses();
   const [status, setStatus] = useState(BuyStatus.BeforeBuy);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
@@ -316,6 +340,8 @@ function BuyStatusButton({
           price={price}
           network={network}
           onHash={handleHash}
+          coin={coin}
+          isNative={isNative}
         >
           {children}
         </BuyButton>
@@ -333,10 +359,81 @@ interface BuyButtonProps {
   price: bigint;
   amount: number;
   network: string;
+  isNative?: boolean;
   children?: ReactNode;
 }
 
+type BuyByCoinButtonProps = BuyButtonProps & {
+  coin: string;
+};
+
 function BuyButton({
+  onHash,
+  packId,
+  price,
+  amount,
+  network,
+  children,
+  isNative = true,
+  coin,
+}: BuyByCoinButtonProps) {
+  const { address } = useAccount();
+  const { chain } = useNetwork();
+  const { marketplaceReceiverAddress, marketplaceSenderAddress } =
+    useAddresses();
+  const spender = useMemo(() => {
+    switch (chain?.id) {
+      case 43113:
+        return marketplaceReceiverAddress;
+      case 11155111:
+        return marketplaceSenderAddress;
+      default:
+        return marketplaceReceiverAddress;
+    }
+  }, [chain, marketplaceReceiverAddress, marketplaceSenderAddress]);
+  const {
+    data: allowance,
+    isLoading,
+    error,
+  } = useCoinRead(coin, 'allowance', [address, spender]);
+  console.log(`allowance`, allowance);
+  const needToApprove = useMemo(() => {
+    if (allowance) {
+      return allowance < BigInt(amount) * BigInt(price);
+    }
+    return true;
+  }, [allowance, amount, price]);
+  if (isNative) {
+    return (
+      <BuyByNativeButton
+        amount={amount}
+        packId={packId}
+        price={price}
+        network={network}
+        onHash={onHash}
+      >
+        {children}
+      </BuyByNativeButton>
+    );
+  } else {
+    return needToApprove ? (
+      <ApproveButton coin={coin}>APPROVE</ApproveButton>
+    ) : (
+      <BuyByCoinButton
+        amount={amount}
+        packId={packId}
+        price={price}
+        network={network}
+        onHash={onHash}
+        coin={coin}
+      >
+        {children}
+      </BuyByCoinButton>
+    );
+  }
+}
+
+function BuyByNativeButton({
   network,
   amount,
   packId,
@@ -358,7 +455,7 @@ function BuyButton({
     isLoading,
     confirmData,
   } = useMarketplaceTxn('purchasePackNative', getChainId(network));
-  const handleBuyByNative = useCallback(() => {
+  const handleBuy = useCallback(() => {
     console.log(`price: ${price}`);
     const value = price * BigInt(amount);
     console.log(`value: ${value}`);
@@ -421,9 +518,177 @@ function BuyButton({
   return (
     <>
       {contextHolder}
-      <PrimaryButton loading={isLoading} onClick={handleBuyByNative}>
+      <PrimaryButton loading={isLoading} onClick={handleBuy}>
         {children}
       </PrimaryButton>
     </>
   );
 }
+
+function BuyByCoinButton({
+  coin,
+  network,
+  amount,
+  packId,
+  price,
+  onHash,
+  children,
+}: BuyByCoinButtonProps) {
+  const { marketplaceReceiverAddress } = useAddresses();
+  const { chain } = useNetwork();
+  const usdtAddress = useCoinAddress(coin, chain?.id || 43113);
+  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    isLoading,
+    confirmData,
+  } = useMarketplaceTxn('purchasePack', getChainId(network));
+  const handleBuy = useCallback(() => {
+    console.log(`price: ${price}`);
+    const value = price * BigInt(amount);
+    console.log(`value: ${value}`);
+    switch (getChainId(network)) {
+      case 43113:
+        //@ts-ignore
+        submit?.({ args: [usdtAddress, packId, amount] });
+        break;
+      case 11155111:
+        submit?.({
+          args: [
+            BigInt('14767482510784806043'),
+            marketplaceReceiverAddress,
+            usdtAddress,
+            packId,
+            amount,
+            1,
+          ],
+        });
+        break;
+      default:
+        submit?.({
+          args: [
+            BigInt('14767482510784806043'),
+            marketplaceReceiverAddress,
+            usdtAddress,
+            packId,
+            amount,
+            1,
+          ],
+        });
+    }
+
+    return;
+  }, [amount, packId, price, network, usdtAddress]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.SUBMIT,
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.CONFIRM,
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+
+  useEffect(() => {
+    console.log(`confirmData`, confirmData);
+    if (confirmData) {
+      console.log(`confirmData`, confirmData);
+      onHash?.(confirmData?.transactionHash);
+    }
+  }, [confirmData]);
+  return (
+    <>
+      {contextHolder}
+      <PrimaryButton loading={isLoading} onClick={handleBuy}>
+        {children}
+      </PrimaryButton>
+    </>
+  );
+}
+
+interface ApproveButtonProps {
+  coin: string;
+  children?: ReactNode;
+}
+
+function ApproveButton({ coin, children }: ApproveButtonProps) {
+  const { chain } = useNetwork();
+  const { marketplaceReceiverAddress, marketplaceSenderAddress } =
+    useAddresses();
+  const spender = useMemo(() => {
+    switch (chain?.id) {
+      case 43113:
+        return marketplaceReceiverAddress;
+      case 11155111:
+        return marketplaceSenderAddress;
+      default:
+        return marketplaceReceiverAddress;
+    }
+  }, [chain, marketplaceReceiverAddress, marketplaceSenderAddress]);
+  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    isLoading,
+    confirmData,
+  } = useCoinTxn(coin, 'approve');
+  const handleApprove = useCallback(() => {
+    submit?.({ args: [spender, BigInt(MAX_UINT256)] });
+    console.log(`approve to ${spender}`);
+    return;
+  }, [spender, submit]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.SUBMIT,
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.CONFIRM,
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+
+  useEffect(() => {
+    console.log(`confirmData`, confirmData);
+    if (confirmData) {
+      console.log(`confirmData`, confirmData);
+    }
+  }, [confirmData]);
+  return (
+    <>
+      {contextHolder}
+      <PrimaryButton loading={isLoading} onClick={handleApprove}>
+        {children}
+      </PrimaryButton>
+    </>
+  );
+}
+
+const MAX_UINT256 =
+  '115792089237316195423570985008687907853269984665640564039457584007913129639935';

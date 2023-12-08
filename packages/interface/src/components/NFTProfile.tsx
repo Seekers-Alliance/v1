@@ -40,7 +40,7 @@ export function NFTProfile2({ tokenId }: NFTProfileProps) {
       <img src={imgUrl} alt={`ID-${tokenId.toString().padStart(3, '0')}`} />
       <div className=''>
         <span className="font-['Space Grotesk'] text-[22px] font-normal uppercase text-white">
-         {`ID-${tokenId.toString().padStart(3, '0')}`}
+          {`ID-${tokenId.toString().padStart(3, '0')}`}
         </span>
       </div>
     </>
