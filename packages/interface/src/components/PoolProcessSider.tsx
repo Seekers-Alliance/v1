@@ -55,6 +55,7 @@ export default function PoolProcessSider() {
           style={{ backgroundColor: 'rgb(31 41 55)' }}
           mode='inline'
           items={items}
+          selectable={false}
         />
       </div>
     </Sider>
