@@ -3,6 +3,7 @@ import {PrimaryButton} from "@/components/Button";
 import {useEffect, useMemo, useState} from "react";
 import useWaitForFulfill from "@/hooks/useWaitForFulfill";
 import useWaitForRequestCompleted from "@/hooks/useWaitForRequestCompleted";
+import {getConfig} from "@/config";
 
 interface OpenStepModalProps {
     open: boolean;
@@ -14,6 +15,7 @@ interface OpenStepModalProps {
 }
 
 export default function OpenStepsModal({requestId,onCompleted,open, onOk, onCancel}: OpenStepModalProps) {
+    const {vrfUrl,automationUrl}=getConfig()
     const [current, setCurrent] = useState(StepStatus.WaitingForRandomWords);
     const [itemStatus, setItemStatus] = useState<string | undefined>(undefined);
     const {
@@ -39,7 +41,7 @@ export default function OpenStepsModal({requestId,onCompleted,open, onOk, onCanc
         {
             title: <h1 className='text-white text-lg'>
                 WAITING FOR RANDOM WORDS(
-                <a href="https://vrf.chain.link/fuji/822" rel="noreferrer" target="_blank">
+                <a href={vrfUrl || ""} rel="noreferrer" target="_blank">
                     Link
                 </a>
                 )
@@ -48,7 +50,7 @@ export default function OpenStepsModal({requestId,onCompleted,open, onOk, onCanc
         {
             title: <h1 className='text-white text-lg'>
                 RANDOM WORD RECEIVED, EXECUTE DRAWS(
-                <a href="https://automation.chain.link/fuji/70264653139243440209183723082320395388490587181761018463948592539042090965409" rel="noreferrer" target="_blank">
+                <a href={automationUrl || ""} rel="noreferrer" target="_blank">
                     Link
                 </a>
                 )

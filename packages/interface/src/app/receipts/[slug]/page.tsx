@@ -4,7 +4,6 @@ import { NavButton } from '@/components/Button';
 import SimpleNavbar from '@/components/SimpleNavbar';
 import { notFound, useRouter } from 'next/navigation';
 import Icon from '@ant-design/icons';
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { NFTProfile2 } from '@/components/NFTProfile';
 import { useWaitForTransaction } from 'wagmi';

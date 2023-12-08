@@ -13,9 +13,11 @@ import usePackPrice from '@/hooks/usePackPrice';
 import { formatAmount } from '@/common';
 import useWaitForCCIP from '@/hooks/useWaitForCCIP';
 import Link from 'next/link';
+import {getConfig} from "@/config";
 
 export default function Page() {
   const { marketplaceReceiverAddress } = useAddresses();
+  const {packId}=getConfig()
   const networkList = ['AVALANCHE', 'ETHEREUM', 'OPTIMISM'];
   const amountList = [1, 5, 10, 15, 20, 25];
   const [selectedNetwork, setSelectedNetwork] = useState(0);
@@ -26,7 +28,6 @@ export default function Page() {
     return `https://ccip.chain.link/msg/${messageId}`;
   }, [messageId]);
   console.log(`messageLink`, messageLink)
-  const packId=10
   const { data: packPrice, error } = usePackPrice(
       packId,
     getChainId(networkList[selectedNetwork])

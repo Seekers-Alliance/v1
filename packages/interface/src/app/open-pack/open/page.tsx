@@ -11,12 +11,12 @@ import { ConnectWalletButton } from '@/components/ConnectWalletButton';
 import OpenStepsModal from "@/components/OpenStepsModal";
 import {filterDrawingEvents} from "@/core/events/drawing";
 import {RequestSentParams} from "@/core/types";
+import {getConfig} from "@/config";
 
 export default function Page() {
   const { address } = useAccount();
-  const packId = 10;
-  const specialPackId = 11;
-  const { data } = useDrawingRead('usersDrawable', [address, packId]);
+  const {packId,specialPackId,drawingPoolId,specialDrawingPoolId}=getConfig()
+  const { data } = useDrawingRead('usersDrawable', [address, drawingPoolId]);
   const [poolAmount, setPoolAmount] = useState<number>(0);
   const packAmount = useMemo(() => {
     return poolAmount / 5;
@@ -34,7 +34,7 @@ export default function Page() {
             packId={packId}
             poolAmount={poolAmount}
           >{`OPEN ${packAmount} PACKS*`}</OpenPackButton>
-          <OpenPackButton packId={specialPackId} poolAmount={1}>
+          <OpenPackButton packId={specialPackId} poolAmount={5}>
             {'OPEN SPECIAL PACK'}
           </OpenPackButton>
         </div>
@@ -50,7 +50,7 @@ interface OpenPackButtonProps {
 }
 
 function OpenPackButton({ packId, poolAmount, children }: OpenPackButtonProps) {
-  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
+  const [status, setStatus] = useState(OpenStatus.WaitingForRandomWords);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
