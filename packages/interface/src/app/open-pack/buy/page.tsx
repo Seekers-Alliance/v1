@@ -202,7 +202,6 @@ function BuyStatusButton({
   const [senderHash, setSenderHash] = useState<`0x${string}` | undefined>(
     undefined
   );
-  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
   const {
     isSuccess,
     isLoading: isCCIPLoading,
@@ -211,18 +210,18 @@ function BuyStatusButton({
     messageId,
     receiverHash,
   } = useWaitForCCIP(11155111, senderHash);
-  const {
-    hash,
-    submit,
-    isSubmitError,
-    isSubmitSuccess,
-    submitError,
-    confirmError,
-    isConfirmSuccess,
-    isConfirmError,
-    isLoading,
-    confirmData,
-  } = useMarketplaceTxn('purchasePackNative', getChainId(network));
+  const handleHash = useCallback(
+    (hash: `0x${string}`) => {
+      if (getChainId(network) === 43113) {
+        setSenderHash(hash);
+        setStatus(BuyStatus.AfterBuy);
+      } else {
+        setSenderHash(hash);
+        setStatus(BuyStatus.PendingBuy);
+      }
+    },
+    [network]
+  );
   const handleChainChanged = useCallback(
     (network: string) => {
       let chainId = getChainId(network);
@@ -235,44 +234,6 @@ function BuyStatusButton({
     },
     [switchNetwork, chain]
   );
-  const handleBuy = useCallback(() => {
-    console.log(`price: ${price}`);
-    if (status === BuyStatus.Buy) {
-      const value = price * BigInt(amount);
-      console.log(`value: ${value}`);
-      switch (getChainId(network)) {
-        case 43113:
-          //@ts-ignore
-          submit?.({ args: [packId, amount], value: value });
-          break;
-        case 11155111:
-          submit?.({
-            args: [
-              BigInt('14767482510784806043'),
-              marketplaceReceiverAddress,
-              packId,
-              amount,
-              1,
-            ],
-            value: value,
-          });
-          break;
-        default:
-          submit?.({
-            args: [
-              BigInt('14767482510784806043'),
-              marketplaceReceiverAddress,
-              packId,
-              amount,
-              1,
-            ],
-            value: value,
-          });
-      }
-
-      return;
-    }
-  }, [status, amount, packId, price, network]);
 
   const handleAfterBuy = useCallback(() => {
     if (status === BuyStatus.AfterBuy) {
@@ -280,36 +241,6 @@ function BuyStatusButton({
       return;
     }
   }, [status]);
-  useEffect(() => {
-    handleTxnResponse(
-      TransactionAction.SUBMIT,
-      isSubmitError,
-      isSubmitSuccess,
-      submitError
-    );
-  }, [isSubmitError, isSubmitSuccess, submitError]);
-  useEffect(() => {
-    handleTxnResponse(
-      TransactionAction.CONFIRM,
-      isConfirmError,
-      isConfirmSuccess,
-      confirmError
-    );
-  }, [isConfirmError, isConfirmSuccess, confirmError]);
-
-  useEffect(() => {
-    console.log(`confirmData`, confirmData);
-    if (confirmData) {
-      console.log(`confirmData`, confirmData);
-      setSenderHash(confirmData?.transactionHash);
-      if (getChainId(network) === 43113) {
-        setStatus(BuyStatus.AfterBuy);
-      } else {
-        setStatus(BuyStatus.PendingBuy);
-      }
-    }
-  }, [confirmData]);
-
   useEffect(() => {
     if (isSuccess && status === BuyStatus.PendingBuy) {
       setStatus(BuyStatus.AfterBuy);
@@ -342,12 +273,15 @@ function BuyStatusButton({
       );
     case BuyStatus.Buy:
       return (
-        <>
-          {contextHolder}
-          <PrimaryButton loading={isLoading} onClick={handleBuy}>
-            {children}
-          </PrimaryButton>
-        </>
+        <BuyButton
+          amount={amount}
+          packId={packId}
+          price={price}
+          network={network}
+          onHash={handleHash}
+        >
+          {children}
+        </BuyButton>
       );
     case BuyStatus.PendingBuy:
       return <PrimaryButton loading={true}>Waiting For CCIP</PrimaryButton>;
@@ -356,6 +290,103 @@ function BuyStatusButton({
   }
 }
 
-function generateCCIPLink(address: string): string {
-  return `https://ccip.chain.link/address/${address}`;
+interface BuyButtonProps {
+  onHash?: (hash: `0x${string}`) => void;
+  packId: number;
+  price: bigint;
+  amount: number;
+  network: string;
+  children?: ReactNode;
+}
+
+function BuyButton({
+  network,
+  amount,
+  packId,
+  price,
+  onHash,
+  children,
+}: BuyButtonProps) {
+  const { marketplaceReceiverAddress } = useAddresses();
+  const { handleTxnResponse, contextHolder, api } = useTxnNotify();
+  const {
+    hash,
+    submit,
+    isSubmitError,
+    isSubmitSuccess,
+    submitError,
+    confirmError,
+    isConfirmSuccess,
+    isConfirmError,
+    isLoading,
+    confirmData,
+  } = useMarketplaceTxn('purchasePackNative', getChainId(network));
+  const handleBuyByNative = useCallback(() => {
+    console.log(`price: ${price}`);
+    const value = price * BigInt(amount);
+    console.log(`value: ${value}`);
+    switch (getChainId(network)) {
+      case 43113:
+        //@ts-ignore
+        submit?.({ args: [packId, amount], value: value });
+        break;
+      case 11155111:
+        submit?.({
+          args: [
+            BigInt('14767482510784806043'),
+            marketplaceReceiverAddress,
+            packId,
+            amount,
+            1,
+          ],
+          value: value,
+        });
+        break;
+      default:
+        submit?.({
+          args: [
+            BigInt('14767482510784806043'),
+            marketplaceReceiverAddress,
+            packId,
+            amount,
+            1,
+          ],
+          value: value,
+        });
+    }
+
+    return;
+  }, [amount, packId, price, network]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.SUBMIT,
+      isSubmitError,
+      isSubmitSuccess,
+      submitError
+    );
+  }, [isSubmitError, isSubmitSuccess, submitError]);
+  useEffect(() => {
+    handleTxnResponse(
+      TransactionAction.CONFIRM,
+      isConfirmError,
+      isConfirmSuccess,
+      confirmError
+    );
+  }, [isConfirmError, isConfirmSuccess, confirmError]);
+
+  useEffect(() => {
+    console.log(`confirmData`, confirmData);
+    if (confirmData) {
+      console.log(`confirmData`, confirmData);
+      onHash?.(confirmData?.transactionHash);
+    }
+  }, [confirmData]);
+  return (
+    <>
+      {contextHolder}
+      <PrimaryButton loading={isLoading} onClick={handleBuyByNative}>
+        {children}
+      </PrimaryButton>
+    </>
+  );
 }
