@@ -8,6 +8,8 @@ export interface Addresses {
   vrfManagerAddress: Address;
   marketplaceSenderAddress: Address;
   marketplaceReceiverAddress: Address;
+  avaxUsdtAddress: Address;
+  ethUsdtAddress: Address;
 }
 
 export function useAddresses(): Addresses {
@@ -19,5 +21,7 @@ export function useAddresses(): Addresses {
     vrfManagerAddress: config.vrfManagerAddress as Address,
     marketplaceSenderAddress: config.marketplaceSenderAddress as Address,
     marketplaceReceiverAddress: config.marketplaceReceiverAddress as Address,
+    avaxUsdtAddress: config.avaxUsdtAddress as Address,
+    ethUsdtAddress: config.ethUsdtAddress as Address,
   };
 }

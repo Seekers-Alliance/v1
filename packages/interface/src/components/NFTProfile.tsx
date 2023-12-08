@@ -37,16 +37,10 @@ export function NFTProfile2({ tokenId }: NFTProfileProps) {
   }, [data]);
   return (
     <>
-      {/*<div className="font-['Space Grotesk'] mt-1 w-[100%] px-2 text-[12px] font-bold uppercase text-white">*/}
-      {/*  {`ID-${tokenId.toString().padStart(3, '0')}`}*/}
-      {/*</div>*/}
       <img src={imgUrl} alt={`ID-${tokenId.toString().padStart(3, '0')}`} />
       <div className=''>
         <span className="font-['Space Grotesk'] text-[22px] font-normal uppercase text-white">
-          ID{' '}
-        </span>
-        <span className="font-['Space Grotesk'] text-[22px] font-bold uppercase text-white">
-          100
+          {`ID-${tokenId.toString().padStart(3, '0')}`}
         </span>
       </div>
     </>

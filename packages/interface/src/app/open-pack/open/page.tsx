@@ -64,7 +64,7 @@ function OpenPackButton({
   poolAmount,
   children,
 }: OpenPackButtonProps) {
-  const [status, setStatus] = useState(OpenStatus.WaitingForRandomWords);
+  const [status, setStatus] = useState(OpenStatus.BeforeOpen);
   const { isConnected } = useAccount();
   const { chain } = useNetwork();
   const { switchNetwork } = useSwitchNetwork();
