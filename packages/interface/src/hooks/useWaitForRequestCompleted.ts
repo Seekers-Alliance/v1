@@ -1,10 +1,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { Hash, parseAbi } from 'viem';
-import useWatchDrawingEvent from "@/hooks/useWatchDrawingEvent";
+import useWatchDrawingEvent from '@/hooks/useWatchDrawingEvent';
 
-export default function useWaitForRequestCompleted(
-  requestId?: bigint
-) {
+export default function useWaitForRequestCompleted(requestId?: bigint) {
   console.log('useWaitForRequestCompleted hash', requestId);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setIsLoading] = useState(true);
@@ -13,12 +11,11 @@ export default function useWaitForRequestCompleted(
   const [completeHash, setCompleteHash] = useState<Hash | null>(null);
 
   console.log('wait local status', isLoading, isSuccess, isError, error);
-  const filter=(event:any)=>{
-    console.log(`filter event`,event)
-    return event.args.requestId===requestId
-  }
-  const {event,stopWatch} = useWatchDrawingEvent('RequestCompleted',filter)
-
+  const filter = (event: any) => {
+    console.log(`filter event`, event);
+    return event.args.requestId === requestId;
+  };
+  const { event, stopWatch } = useWatchDrawingEvent('RequestCompleted', filter);
 
   useEffect(() => {
     if (event) {
@@ -27,7 +24,7 @@ export default function useWaitForRequestCompleted(
       setError(null);
       setIsSuccess(true);
       setIsLoading(false);
-      stopWatch()
+      stopWatch();
     }
   }, [event]);
   return {

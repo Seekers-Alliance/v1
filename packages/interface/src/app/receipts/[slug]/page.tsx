@@ -4,7 +4,6 @@ import { NavButton } from '@/components/Button';
 import SimpleNavbar from '@/components/SimpleNavbar';
 import { notFound, useRouter } from 'next/navigation';
 import Icon from '@ant-design/icons';
-import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
 import { NFTProfile2 } from '@/components/NFTProfile';
 import { useWaitForTransaction } from 'wagmi';
@@ -57,43 +56,48 @@ export default function Page({ params }: { params: { slug: string } }) {
       <div className='fixed left-[650px] top-[51px]'>
         <div className='flex flex-row gap-4'>
           <div className='h-[60px] w-[250px]'>
-            <NavButton >
-              <a href={'https://testnets.opensea.io/account?search[collections][0]=seekers-alliance'} target={'_blank'}>
-              <div className='inline-flex items-center gap-4'>
-                <span>View NFTs on OpenSea</span>
-                <span>
-                  <Icon
-                    component={() => (
-                      <img
-                        src={'/External-Link-1.svg'}
-                        width={25}
-                        height={20}
-                      />
-                    )}
-                  />
-                </span>
-              </div>
+            <NavButton>
+              <a
+                href={
+                  'https://testnets.opensea.io/account?search[collections][0]=seekers-alliance'
+                }
+                target={'_blank'}
+              >
+                <div className='inline-flex items-center gap-4'>
+                  <span>View NFTs on OpenSea</span>
+                  <span>
+                    <Icon
+                      component={() => (
+                        <img
+                          src={'/External-Link-1.svg'}
+                          width={25}
+                          height={20}
+                        />
+                      )}
+                    />
+                  </span>
+                </div>
               </a>
             </NavButton>
           </div>
           <div className='h-[60px] w-[420px]'>
             <NavButton>
-                <a href={'https://vrf.chain.link/fuji/822'} target={'_blank'}>
-              <div className='inline-flex items-center gap-4'>
-                <span>CHAINLINK VRF TRANSACTION ID TO PROVE FAIRNESS</span>
-                <span>
-                  <Icon
-                    component={() => (
-                      <img
-                        src={'/External-Link-1.svg'}
-                        width={25}
-                        height={20}
-                      />
-                    )}
-                  />
-                </span>
-              </div>
-                </a>
+              <a href={'https://vrf.chain.link/fuji/822'} target={'_blank'}>
+                <div className='inline-flex items-center gap-4'>
+                  <span>CHAINLINK VRF TRANSACTION ID TO PROVE FAIRNESS</span>
+                  <span>
+                    <Icon
+                      component={() => (
+                        <img
+                          src={'/External-Link-1.svg'}
+                          width={25}
+                          height={20}
+                        />
+                      )}
+                    />
+                  </span>
+                </div>
+              </a>
             </NavButton>
           </div>
         </div>

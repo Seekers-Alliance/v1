@@ -48,7 +48,7 @@ export default function SetDrawingProbabilitySection({
     );
     console.log('submit unitPoolIds', unitPoolIds, probabilityList);
     //@ts-ignore
-    submit?.({ args: [unitPoolIds,probabilityList.map((i)=>i*10)] });
+    submit?.({ args: [unitPoolIds, probabilityList.map((i) => i * 10)] });
   }, [poolId, add, probabilityList]);
   const {
     hash,

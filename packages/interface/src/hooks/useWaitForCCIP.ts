@@ -15,7 +15,7 @@ import {
 import { getEvent } from '@/core/events/event';
 import { useAddresses } from '@/hooks/useAddresses';
 import { MessageReceivedParams } from '@/core/types';
-import useWatchMarketplaceEvent from "@/hooks/useWatchMarketplaceEvent";
+import useWatchMarketplaceEvent from '@/hooks/useWatchMarketplaceEvent';
 
 export default function useWaitForCCIP(
   chainId: number,
@@ -53,7 +53,10 @@ export default function useWaitForCCIP(
     },
     [messageIdRef.current]
   );
-  const {event,stopWatch} = useWatchMarketplaceEvent('MessageReceived',filter)
+  const { event, stopWatch } = useWatchMarketplaceEvent(
+    'MessageReceived',
+    filter
+  );
   console.log('messageIdRef', messageIdRef.current);
   console.log('event', event);
   useEffect(() => {
@@ -85,15 +88,15 @@ export default function useWaitForCCIP(
     }
   }, [senderError, isSenderLoading]);
   useEffect(() => {
-    if (event){
-        setReceiverHash(event.transactionHash)
+    if (event) {
+      setReceiverHash(event.transactionHash);
       setIsSuccess(true);
-        setIsLoading(false);
-        setError(null);
-        setIsError(false);
-      stopWatch()
+      setIsLoading(false);
+      setError(null);
+      setIsError(false);
+      stopWatch();
     }
-  }, [event,stopWatch]);
+  }, [event, stopWatch]);
   return {
     messageId: messageIdRef.current,
     isLoading,
