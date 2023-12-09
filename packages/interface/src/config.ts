@@ -30,5 +30,6 @@ export function getConfig() {
     ),
     automationUrl: process.env.NEXT_PUBLIC_AUTOMATION_URL,
     vrfUrl: process.env.NEXT_PUBLIC_VRF_URL,
+    openseaCollectionUrl: process.env.NEXT_PUBLIC_OPENSEA_COLLECTION_URL,
   };
 }
