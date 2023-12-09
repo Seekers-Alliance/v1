@@ -9,10 +9,10 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./IHierarchicalDrawing.sol";
 
 // This contract uses Chainlink products: CCIP and Price Feed
-// First, Chainlink Price Feed is used to obtain the current exchange rates between supported tokens, 
+// First, Chainlink Price Feed is used to obtain the current exchange rates between supported tokens,
 // allowing players to use the token of their choice when purchasing our card packs.
-// Second, we deployed our main contracts on the Avalanche Fuji testnet, 
-// then, we applied Chainlink CCIP to make it convenient for players 
+// Then, we deployed our main contracts on the Avalanche Fuji testnet,
+// and applied Chainlink CCIP to make it convenient for players
 // from other supported chains to be able to make cross-chain purchases.
 
 contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {

@@ -5,9 +5,9 @@ import "./IHierarchicalDrawing.sol";
 import "@chainlink/contracts/src/v0.8/automation/interfaces/ILogAutomation.sol";
 import {OwnerIsCreator} from "@chainlink/contracts-ccip/src/v0.8/shared/access/OwnerIsCreator.sol";
 
-// This contract uses Chainlink product: Automaion
-// Automaion monitors the event RequestFulfilled from our card drawing contract,
-// when the event was emitted, this contrcat will automatically call execRequest to execute the request.
+// This contract uses Chainlink product: Automation
+// Automation monitors the event RequestFulfilled from our card drawing contract,
+// when the event is emitted, this contract will automatically call execRequest to execute the request.
 
 contract Automator is ILogAutomation, OwnerIsCreator {
 

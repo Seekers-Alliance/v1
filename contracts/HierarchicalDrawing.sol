@@ -18,11 +18,11 @@ error DrwaingPoolNotExist(uint32);
 error DrawableNotEnough(address, uint32);
 error RequestNotExist(uint256);
 
-// This smart contract focuses on flexibility and long-term viability
-// and mitigates the problem of pull rates being dependent on the NFT supply counts.
-// We introduces a flexible hierarchical structure built upon the ERC-1155 standard, 
-// so that game developers can freely customize pool probabilities according to their game design
-// and launch updates and new releases while maintaining fair pull rates. 
+// This smart contract mitigates the problem of pull rates being dependent on the NFT supply counts,
+// allowing for more freedom in game design while increasing long-term viability.
+// Here we introduce a flexible hierarchical drawing pools architecture built upon the ERC-1155 standard,
+// so that game developers can customize pool probabilities according to their game use cases
+// and launch updates and new releases while maintaining constant and fair pull rates.
 
 contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     using SafeMath for uint32;

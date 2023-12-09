@@ -8,8 +8,8 @@ import "@openzeppelin/contracts/access/AccessControl.sol";
 import "./IHierarchicalDrawing.sol";
 import "./IVRFManager.sol";
 
-// This contract uses Chainlink product, VRF
-// We utilize random words fulfilled from VRF to draw the tokenID from the defined pools. 
+// This contract uses Chainlink product: VRF
+// We utilize random words fulfilled from VRF to draw  tokenIDs from the defined pools for verifiable fairness.
 
 contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessControl {    
     bytes32 public constant REQUESTER_ROLE = keccak256("REQUESTER_ROLE");
@@ -23,7 +23,7 @@ contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessContr
         bool exists; // whether a requestId exists
         uint256[] randomWords;
     }
-    
+
     /* requestId --> requestStatus */
     mapping(uint256 => RequestStatus) public s_requests; 
     
