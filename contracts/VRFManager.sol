@@ -9,7 +9,7 @@ import "./IHierarchicalDrawing.sol";
 import "./IVRFManager.sol";
 
 // This contract uses Chainlink product, VRF
-// We utilize the fulfilled random words to draw the tokenID from the defined pool. 
+// We utilize random words fulfilled from VRF to draw the tokenID from the defined pools. 
 
 contract VRFv2SubscriptionManager is IVRFManager, VRFConsumerBaseV2, AccessControl {    
     bytes32 public constant REQUESTER_ROLE = keccak256("REQUESTER_ROLE");
