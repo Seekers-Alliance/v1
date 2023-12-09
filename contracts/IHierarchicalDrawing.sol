@@ -36,6 +36,8 @@ interface IHierarchicalDrawing {
     function setUserDrawable(address _user, uint32[] memory _poolsID, uint32[] memory _amounts) external;
     function fulfillRandomWords(uint256 _requestId, uint256[] memory _randomWords) external;
 
+    event SetTokenPool(uint256[] ids);
+    event SetTokenMaxAmount(uint32[] maxAmounts);
     event SetUnitPool(uint32 unitPoolID);
     event SetDrawingPool(uint32 drawingPoolID);
     event RequestSent(uint256 requestId, address _requester);

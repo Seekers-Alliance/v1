@@ -42,8 +42,8 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
     mapping (uint32 => DrawingPoolInfo) public drawingPoolsInfo;
     mapping (uint256 => RequestInfo) public requestsInfo;
 
-    uint32 unitPoolNonce;
-    uint32 drawingPoolNonce;
+    uint32 public unitPoolNonce;
+    uint32 public drawingPoolNonce;
     uint256 public requestNonce;
     uint32[] public existedUnit;
     uint32[] public existedDrawing;
@@ -87,6 +87,8 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
 
     function setTokenPool(uint256[] memory _ids) external onlyOwner {
         ids = _ids;
+
+        emit SetTokenPool(_ids);
     }
 
     function setTokenMaxAmount(uint32[] memory _maxAmounts) external onlyOwner {
@@ -95,13 +97,15 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         
         maxAmounts = _maxAmounts;
         remainings = _maxAmounts;
+
+        emit SetTokenMaxAmount(_maxAmounts);
     }
 
-    function setUnitPool(uint32[] memory _probs) external onlyOwner returns(uint32) {
+    function setUnitPool(uint32[] memory _probs) external onlyOwner {
         uint32 _unitID = unitPoolNonce;
         UnitPoolInfo storage unit = unitPoolsInfo[_unitID];
         if(_probs.length != ids.length) revert LengthNotMatch();
-        
+
         unit.tree = buildOcTree(_probs);
         unit.treeHeight = getOctreeHeight(_probs.length);
         unit.probs = _probs;
@@ -110,10 +114,9 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         unitPoolNonce ++;
 
         emit SetUnitPool(_unitID);
-        return(_unitID);
     }
 
-    function setDrawingPool(uint32[] memory _unitIDs, uint32[] memory _probs) external onlyOwner returns(uint32){
+    function setDrawingPool(uint32[] memory _unitIDs, uint32[] memory _probs) external onlyOwner{
         uint32 _poolID = drawingPoolNonce;
         DrawingPoolInfo storage pool = drawingPoolsInfo[_poolID];
         if(_unitIDs.length != _probs.length) revert LengthNotMatch();
@@ -126,7 +129,6 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         drawingPoolNonce ++;
 
         emit SetDrawingPool(_poolID);
-        return(_poolID);
     }
 
     function setUserDrawable(address _user, uint32[] memory _poolsID, uint32[] memory _amounts) external onlySeller {
@@ -237,7 +239,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return (_ids);
     }
 
-    function execRequestBatch() public onlyExecutor {
+    function execRequestBatch() external onlyExecutor {
         uint256 pending = pendingRequestNum();
         for(uint256 i; i<pending;i++) {
             execRequest();
@@ -399,19 +401,19 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return pooledResult;
     }
 
-    function getTokenPoolInfo() public view returns(uint256[] memory) {
+    function getTokenPoolInfo() external view returns(uint256[] memory) {
         return (ids);
     }
 
-    function getTokenMaxAmounts() public view returns(uint32[] memory) {
+    function getTokenMaxAmounts() external view returns(uint32[] memory) {
         return (maxAmounts);
     }
 
-    function getTokenRemainings() public view returns(uint32[] memory) {
+    function getTokenRemainings() external view returns(uint32[] memory) {
         return (remainings);
     }
 
-    function getTokenInfo(uint256 _id) public view returns(bool, uint256, uint32, uint32) {
+    function getTokenInfo(uint256 _id) external view returns(bool, uint256, uint32, uint32) {
         for(uint256 i;i<ids.length;i++) {
             if(ids[i] == _id) {
                 return(true, i, maxAmounts[i], remainings[i]);
@@ -420,24 +422,24 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return (false, 0,0,0);
     }
 
-    function getExistedAtomic() public view returns(uint32[] memory) {
+    function getExistedUnitPool() external view returns(uint32[] memory unitPools) {
         return existedUnit;
     }
     
-    function getExistedDrawingPool() public view returns(uint32[] memory) {
+    function getExistedDrawingPool() external view returns(uint32[] memory drawingPools) {
         return existedDrawing;
     }
     
-    function getTokenSupply(uint256 _id) public view returns(uint256) {
+    function getTokenSupply(uint256 _id) external view returns(uint256) {
         return nftContract.totalSupply(_id);
     }
 
-    function getUnitPoolInfo(uint32 _unitID) public view returns(uint32[] memory, PackedArray.PackedArray32 memory) {
+    function getUnitPoolInfo(uint32 _unitID) external view returns(uint32[] memory, PackedArray.PackedArray32 memory) {
         UnitPoolInfo memory unit = unitPoolsInfo[_unitID];
         return (unit.probs, unit.tree);
     }
 
-    function getPoolInfo(uint32 _poolID) public view returns(uint32[] memory, uint32[] memory, uint32[] memory) {
+    function getPoolInfo(uint32 _poolID) external view returns(uint32[] memory, uint32[] memory, uint32[] memory) {
         DrawingPoolInfo memory pool = drawingPoolsInfo[_poolID];
         return (pool.units, pool.probs, pool.accumulatedProbs);
     }
@@ -450,15 +452,15 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         return usersDrawable[_user][_poolID];
     }
 
-    function getReuqestQueue() public view returns(uint256[] memory) {
+    function getReuqestQueue() external view returns(uint256[] memory) {
         return requestsQueue;
     }
 
-    function getLastRequestId() public view returns(uint256) {
+    function getLastRequestId() external view returns(uint256) {
         return requestsQueue[requestNonce];
     }
 
-    function getRequestInfo(uint256 _requestId) public view returns(RequestInfo memory) {
+    function getRequestInfo(uint256 _requestId) external view returns(RequestInfo memory) {
         return requestsInfo[_requestId];
     }
 
@@ -521,5 +523,4 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
             }
         }
     }
-
 }
