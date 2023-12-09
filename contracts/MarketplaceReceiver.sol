@@ -8,6 +8,13 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "./IHierarchicalDrawing.sol";
 
+// This contract uses Chainlink products: CCIP and Price Feed
+// First, Chainlink Price Feed is used to obtain the current exchange rates between tokens, 
+// allowing players to use a supported token of their choice when purchasing our card packs.
+// Second, we deployed our main contracts on the Avalanche Fuji testnet, 
+// then, we applied Chainlink CCIP to make it convenient for players 
+// from other chains to be able to make cross-chain purchases.
+
 contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
     error SourceChainNotAllowlisted(uint64 sourceChainSelector);
     error SenderNotAllowlisted(address sender);
@@ -32,20 +39,41 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
     // Mapping to keep track of allowlisted senders.
     mapping(address => bool) public allowlistedSenders;
     mapping (address => uint256) public totalAmount;
-    mapping (uint32 => PackInfo) packsInfo;
+    mapping (uint32 => PackInfo) public packsInfo;
+    mapping(address => address) public aggregators;
 
+    address public nativeTokenAggregator;
     address public basePaymentToken;
     IHierarchicalDrawing public drawContract;
     
     constructor(
         address _ccipRouter,
-        address _basePaymentToken
+        address _basePaymentToken,
+        address _baseAggregator,
+        address _nativeAggregator
     ) CCIPReceiver(_ccipRouter){
         basePaymentToken = _basePaymentToken;
+        aggregators[_basePaymentToken] = _baseAggregator;
+        nativeTokenAggregator = _nativeAggregator;
     }
 
+    function setAggregator(address _token, address _aggregator) public onlyOwner {
+        aggregators[_token] = _aggregator;
+    }
+
+    function setNativeAggregator(address _aggregator) public onlyOwner {
+        nativeTokenAggregator = _aggregator;
+    }
+    
     function setDrawContract(address _drawContract) public onlyOwner {
         drawContract = IHierarchicalDrawing(_drawContract);
+    }
+
+    // @dev Function to set the pack
+    function setPack(uint32 _packID, uint256 _packPrice, uint32[] memory _poolsID, uint32[] memory _amounts) external onlyOwner {
+        packsInfo[_packID].basePrice = _packPrice;
+        packsInfo[_packID].poolsID = _poolsID;
+        packsInfo[_packID].amounts = _amounts;
     }
 
     /// @dev Modifier that checks if the chain with the given sourceChainSelector is allowlisted and if the sender is allowlisted.
@@ -55,11 +83,6 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
         if (!allowlistedSourceChains[_sourceChainSelector])
             revert SourceChainNotAllowlisted(_sourceChainSelector);
         if (!allowlistedSenders[_sender]) revert SenderNotAllowlisted(_sender);
-        _;
-    }
-
-    modifier onlyThisContract() {
-        if (msg.sender != address(this)) revert CallerNotAllowed(msg.sender);
         _;
     }
 
@@ -76,14 +99,68 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
         allowlistedSenders[_sender] = allowed;
     }
 
-    // Function to set the pack (only owner)
-    function setPack(uint32 _packID, uint256 _packPrice, uint32[] memory _poolsID, uint32[] memory _amounts) external onlyOwner {
-        packsInfo[_packID].basePrice = _packPrice;
-        packsInfo[_packID].poolsID = _poolsID;
-        packsInfo[_packID].amounts = _amounts;
+    function priceConvertor(
+        address _numeratorAggregator,
+        address _denominatorAggregator,
+        uint8 _decimals
+    ) public view returns (int256) {
+        require(
+            _decimals > uint8(0) && _decimals <= uint8(18),
+            "Invalid _decimals"
+        );
+
+        AggregatorV3Interface numeratorAggregator = AggregatorV3Interface(_numeratorAggregator);
+        AggregatorV3Interface denominatorAggregator = AggregatorV3Interface(_denominatorAggregator);
+
+        int256 decimals = int256(10 ** uint256(_decimals));
+        (, int256 payPrice, , , ) = numeratorAggregator.latestRoundData();
+        uint8 payDecimals = numeratorAggregator.decimals();
+        payPrice = scalePrice(payPrice, payDecimals, _decimals);
+
+        (, int256 basePrice, , , ) = denominatorAggregator.latestRoundData();
+        uint8 baseDecimals = denominatorAggregator.decimals();
+        basePrice = scalePrice(basePrice, baseDecimals, _decimals);
+
+        return (payPrice * decimals) / basePrice;
     }
 
-    // ### CHAINLINK PRODUCT: CCIP ###  
+    function scalePrice(
+        int256 _price,
+        uint8 _priceDecimals,
+        uint8 _decimals
+    ) internal pure returns (int256) {
+        if (_priceDecimals < _decimals) {
+            return _price * int256(10 ** uint256(_decimals - _priceDecimals));
+        } else if (_priceDecimals > _decimals) {
+            return _price / int256(10 ** uint256(_priceDecimals - _decimals));
+        }
+        return _price;
+    }
+
+    function getPriceFeed(address _aggregator) public view returns(int256) {
+        (, int256 price, , , ) = AggregatorV3Interface(_aggregator).latestRoundData();
+        return (price);
+    }
+
+    function getPackConvertedPrice(uint32 _packID, address _token) public view returns(uint256) {
+        ERC20 paymentToken = ERC20(_token);
+        ERC20 baseToken = ERC20(basePaymentToken);
+
+        uint256 convertedPrice = uint256(priceConvertor(aggregators[basePaymentToken], aggregators[_token], 18));
+        uint256 totalPayment = packsInfo[_packID].basePrice*convertedPrice / 10**(baseToken.decimals() + 18 - paymentToken.decimals());
+
+        return (totalPayment);
+    }
+
+    function getPackConvertedNativePrice(uint32 _packID) public view returns(uint256) {
+        ERC20 baseToken = ERC20(basePaymentToken);
+        uint256 convertedPrice = uint256(priceConvertor(aggregators[basePaymentToken], nativeTokenAggregator, 18));
+        uint256 totalPayment = packsInfo[_packID].basePrice*convertedPrice / 10**baseToken.decimals();
+
+        return (totalPayment);
+    }
+
+    /// handle a received CCIP message
     function _ccipReceive(
         Client.Any2EVMMessage memory message
     ) internal override 
@@ -114,8 +191,6 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
             // Handle unknown function selector or revert
             revert("Unknown function selector");
         }
-        // (bool success, ) = address(this).call(message.data);
-        // require(success);
 
         emit MessageReceived(
             message.messageId,
@@ -142,13 +217,21 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
     }
 
     // Function to purchase a game pack
-    function purchasePack(uint32 _packID, uint32 _packAmounts) external {
+    function purchasePack(address _token, uint32 _packID, uint32 _packAmounts) external {
         uint256 basePrice = packsInfo[_packID].basePrice;
         uint256 totalPayment;
         address purchaser = msg.sender;
-        ERC20 paymentToken = ERC20(basePaymentToken);
+        ERC20 paymentToken = ERC20(_token);
 
-        totalPayment = _packAmounts*basePrice;
+        require(_packAmounts > 0, "Pack amount must be greater than 0");
+        require(aggregators[_token] != address(0), "Token not supported");
+
+        if(_token == basePaymentToken) {
+            totalPayment = _packAmounts*basePrice;
+        } else {
+            uint256 packConvertedPrice = getPackConvertedPrice(_packID, _token);
+            totalPayment = _packAmounts*packConvertedPrice;
+        }
 
         // Check if the purchaser has enough allowance and balance
         require(
@@ -168,6 +251,32 @@ contract MarketplaceReceiver is CCIPReceiver, OwnerIsCreator {
 
         setPurchasedInfo(purchaser, _packID, _packAmounts);
         emit PackPurchased(purchaser, _packAmounts);
+    }
+
+    function purchasePackNative(uint32 _packID, uint32 _packAmounts) external payable {
+        address purchaser = msg.sender;
+        uint256 packConvertedPrice = getPackConvertedNativePrice(_packID);
+        uint256 totalPayment = _packAmounts*packConvertedPrice;
+        require(_packAmounts > 0, "Pack amount must be greater than 0");
+
+        // Check if the buyer has enough balance
+        require(
+            msg.value == totalPayment,
+            "Incorrect amount"
+        );
+
+        require(
+            purchaser.balance >= totalPayment,
+            "Insufficient amount"
+        );
+
+        setPurchasedInfo(purchaser, _packID, _packAmounts);
+        emit PackPurchased(purchaser, _packAmounts);
+    }
+
+    function getPackInfo(uint32 _packID) external view returns(uint256 Price, uint32[] memory poolsID, uint32[] memory amounts){
+        PackInfo memory pack = packsInfo[_packID];
+        return(pack.basePrice, pack.poolsID, pack.amounts);
     }
 
     // Function for the owner to withdraw funds from the contract
