@@ -11,10 +11,10 @@ export function getConfig() {
       process.env.NEXT_PUBLIC_VRF_MANAGER_ADDRESS ||
       '0xd3f8FFdA0fd9A2eB5D3acF7c5E9ae4334f0A2Add',
     marketplaceSenderAddress:
-      process.env.NEXT_PUBLIC_MARKETPALCE_SENDER_ADDRESS ||
+      process.env.NEXT_PUBLIC_MARKETPLACE_SENDER_ADDRESS ||
       '0x19121241f9F3Da2813b5B8C0E2Bc5aEA9Ec17aF5',
     marketplaceReceiverAddress:
-      process.env.NEXT_PUBLIC_MARKETPALCE_RECEIVER_ADDRESS ||
+      process.env.NEXT_PUBLIC_MARKETPLACE_RECEIVER_ADDRESS ||
       '0x1d163C7Fb8925a88EB0AC4042868F8248d60a107',
     avaxUsdtAddress:
       process.env.NEXT_PUBLIC_AVAX_USDT_ADDRESS ||
