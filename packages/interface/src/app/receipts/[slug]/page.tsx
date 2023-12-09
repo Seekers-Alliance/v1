@@ -9,8 +9,10 @@ import { NFTProfile2 } from '@/components/NFTProfile';
 import { useWaitForTransaction } from 'wagmi';
 import { filterERC1155Events } from '@/core/events/erc1155';
 import { TransferBatchParams, TransferSingleParams } from '@/core/types';
+import {getConfig} from "@/config";
 
 export default function Page({ params }: { params: { slug: string } }) {
+  const {openseaCollectionUrl,vrfUrl}=getConfig()
   const router = useRouter();
   const { slug } = params;
   const [tokenList, setTokenList] = useState<bigint[]>([]);
@@ -59,7 +61,8 @@ export default function Page({ params }: { params: { slug: string } }) {
             <NavButton>
               <a
                 href={
-                  'https://testnets.opensea.io/account?search[collections][0]=seekers-alliance'
+                    openseaCollectionUrl ||
+                    'https://opensea.io/collection/wagmi-nft'
                 }
                 target={'_blank'}
               >
@@ -82,7 +85,7 @@ export default function Page({ params }: { params: { slug: string } }) {
           </div>
           <div className='h-[60px] w-[420px]'>
             <NavButton>
-              <a href={'https://vrf.chain.link/fuji/822'} target={'_blank'}>
+              <a href={vrfUrl || ''} target={'_blank'}>
                 <div className='inline-flex items-center gap-4'>
                   <span>CHAINLINK VRF TRANSACTION ID TO PROVE FAIRNESS</span>
                   <span>
