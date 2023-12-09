@@ -10,11 +10,11 @@ import "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import "./IHierarchicalDrawing.sol";
 
 // This contract uses Chainlink products: CCIP and Price Feed
-// First, Chainlink Price Feed is used to obtain the current exchange rates between tokens, 
-// allowing players to use a supported token of their choice when purchasing our card packs.
+// First, Chainlink Price Feed is used to obtain the current exchange rates between supported tokens, 
+// allowing players to use the token of their choice when purchasing our card packs.
 // Second, we deployed our main contracts on the Avalanche Fuji testnet, 
 // then, we applied Chainlink CCIP to make it convenient for players 
-// from other chains to be able to make cross-chain purchases.
+// from other supported chains to be able to make cross-chain purchases.
 
 event PackPurchased(address indexed buyer, uint32 amount);
 event MessageSent(
