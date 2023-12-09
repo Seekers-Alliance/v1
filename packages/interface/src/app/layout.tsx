@@ -12,8 +12,8 @@ import { TokenListProvider } from '@/contexts/TokenListProvider';
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Seeker-Alliance',
-  description: 'Seeker-Alliance',
+  title: 'Seekers-Alliance',
+  description: 'A Chainlink Hackathon Project on Avalanche',
 };
 
 export default function RootLayout({
@@ -32,7 +32,9 @@ export default function RootLayout({
           href='https://fonts.googleapis.com/css2?family=Space+Grotesk&display=swap'
           rel='stylesheet'
         />
-        <title>Seeker-Alliance</title>
+        <title>
+          Seekers Alliance | A Chainlink Hackathon Project on Avalanche
+        </title>
       </head>
       <body className={inter.className}>
         <StyledComponentsRegistry>
