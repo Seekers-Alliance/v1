@@ -55,19 +55,19 @@ The following document contains the setup instructions for our smart contracts, 
 
 ## Deployed Contracts:
 ### Avalanche Fuji testnet
-Hierarchical drawing contract: `0xFF51679a88e54314B0AA501eB5Ee5A8ca655D14E`
-ERC-1155 NFT contract: `0x6cF5b3eB63415db6d1AA009C1E9e6267c3210185`
+Hierarchical drawing contract: `0xFF51679a88e54314B0AA501eB5Ee5A8ca655D14E`  
+ERC-1155 NFT contract: `0x6cF5b3eB63415db6d1AA009C1E9e6267c3210185`  
 VRF Manager:
-`0xc9C9db99fEBC71Ff0995BF08B9daC5d6f2388824`
-Marketplace Receiver: `0xe8dAed8f0c4Beeb5C6838cd3Bcb4a627D445fd14`
-Automation Contract: `0xDa4cCdA307631fBc61532131e449A3f0E235e918`
+`0xc9C9db99fEBC71Ff0995BF08B9daC5d6f2388824`  
+Marketplace Receiver: `0xe8dAed8f0c4Beeb5C6838cd3Bcb4a627D445fd14`  
+Automation Contract: `0xDa4cCdA307631fBc61532131e449A3f0E235e918`  
 USDT test token: `0xae940284e4eB37Fec1F1Bf1D7f297EB1f07f2B26`
 ### Sepolia testnet:
-Marketplace Sender: `0x63612945C4F194c0dcd1337c646AACe5F604f5Ec`
+Marketplace Sender: `0x63612945C4F194c0dcd1337c646AACe5F604f5Ec`  
 USDT test token: `0x4E85938b8cba54F4726A649b727c15Cca379b146`
 ### OP Goerli testnet:
 Marketplace Sender: `0x93101595adD893d24aB7159d0894877A901D36d
-`
+`  
 USDT test token:
 `0x4fcDfcc0f6C7322A029Ea421ae594Dd5A6978826`
 
