@@ -1,7 +1,7 @@
 # Flexible Hierarchical Drawing Pools by Seekers Alliance
 
 ## Introduction
-This repository contains the smart contracts for the Flexible Hierarchical Drawing Pools by Seekers Alliance. The contract allows for the customization of Hierarchical Drawing Pools so that game developers can freely customize pool probabilities at each level according to their game design at launch, updates, and new releases while maintaining constant and fair pull rates.
+This repository contains the smart contracts for the Flexible Hierarchical Drawing Pools by Seekers Alliance. The main contract is deployed on Avalanche Fuji with cross-chain functions enabled by CCIP. The contract allows for the customization of Hierarchical Drawing Pools so that game developers can freely customize pool probabilities at each level according to their game design at launch, updates, and new releases while maintaining constant and fair pull rates.
 
 The following document contains the setup instructions for our smart contracts, which integrate 4 Chainlink products: VRF, CCIP, Price Feed and Automation. Follow the steps below to set up each contract:
 ## Contracts Structure
@@ -78,7 +78,7 @@ USDT test token:
 2. CCIP Explorer for checking status:
 - Sepolia: https://ccip.chain.link/address/0x63612945C4F194c0dcd1337c646AACe5F604f5Ec 
 - Op goerli: https://ccip.chain.link/address/0x93101595adD893d24aB7159d0894877A901D36de
-- Avalanche Fuji: https://ccip.chain.link/address/0xe8dAed8f0c4Beeb5C6838cd3Bcb4a627D445fd14
+- Avalanche Fuji (see “Incoming” tab): https://ccip.chain.link/address/0xe8dAed8f0c4Beeb5C6838cd3Bcb4a627D445fd14
 3. Automation History: https://automation.chain.link/fuji/25476883182264389823337878357790461058949639267999155035608326058986877878969
 4. NFT Collection:  
 https://testnets.opensea.io/collection/seekers-alliance-demo
