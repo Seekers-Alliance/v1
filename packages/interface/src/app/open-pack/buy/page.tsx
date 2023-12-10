@@ -73,6 +73,12 @@ export default function Page() {
   const isNative = useMemo(() => {
     return selectedToken === 0;
   }, [selectedToken]);
+  const price = useMemo(() => {
+    if (isNative){
+        return packPrice?.native || BigInt(0);
+    }
+    return packPrice?.usdt || BigInt(0);
+  }, [isNative]);
   const totalCost = useMemo(() => {
     let cost = '0';
     let coin = nativeCoin;
@@ -179,7 +185,7 @@ export default function Page() {
               packId={packId}
               network={networkList[selectedNetwork]}
               amount={amountList[selectedAmount]}
-              price={packPrice?.native || BigInt(0)}
+              price={price}
               onMessageId={handleMessageId}
               onSenderHash={handleSenderHash}
               coin={coin}
@@ -397,7 +403,9 @@ function BuyButton({
     error,
   } = useCoinRead(coin, 'allowance', [address, spender]);
   console.log(`allowance`, allowance);
+  console.log(`allowance`, allowance, amount, price)
   const needToApprove = useMemo(() => {
+    console.log(`allowance`, allowance, amount, price)
     if (allowance) {
       return allowance < BigInt(amount) * BigInt(price);
     }
