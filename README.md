@@ -81,4 +81,4 @@ USDT test token:
 - Avalanche Fuji: https://ccip.chain.link/address/0xe8dAed8f0c4Beeb5C6838cd3Bcb4a627D445fd14
 3. Automation History: https://automation.chain.link/fuji/25476883182264389823337878357790461058949639267999155035608326058986877878969
 4. NFT Collection:  
-https://testnets.opensea.io/zh-TW/collection/seekers-alliance-demo
+https://testnets.opensea.io/collection/seekers-alliance-demo
