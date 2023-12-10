@@ -9,10 +9,10 @@ import { NFTProfile2 } from '@/components/NFTProfile';
 import { useWaitForTransaction } from 'wagmi';
 import { filterERC1155Events } from '@/core/events/erc1155';
 import { TransferBatchParams, TransferSingleParams } from '@/core/types';
-import {getConfig} from "@/config";
+import { getConfig } from '@/config';
 
 export default function Page({ params }: { params: { slug: string } }) {
-  const {openseaCollectionUrl,vrfUrl}=getConfig()
+  const { openseaCollectionUrl, vrfUrl } = getConfig();
   const router = useRouter();
   const { slug } = params;
   const [tokenList, setTokenList] = useState<bigint[]>([]);
@@ -61,8 +61,8 @@ export default function Page({ params }: { params: { slug: string } }) {
             <NavButton>
               <a
                 href={
-                    openseaCollectionUrl ||
-                    'https://opensea.io/collection/wagmi-nft'
+                  openseaCollectionUrl ||
+                  'https://opensea.io/collection/wagmi-nft'
                 }
                 target={'_blank'}
               >

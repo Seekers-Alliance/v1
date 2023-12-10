@@ -74,8 +74,8 @@ export default function Page() {
     return selectedToken === 0;
   }, [selectedToken]);
   const price = useMemo(() => {
-    if (isNative){
-        return packPrice?.native || BigInt(0);
+    if (isNative) {
+      return packPrice?.native || BigInt(0);
     }
     return packPrice?.usdt || BigInt(0);
   }, [isNative]);
@@ -403,9 +403,9 @@ function BuyButton({
     error,
   } = useCoinRead(coin, 'allowance', [address, spender]);
   console.log(`allowance`, allowance);
-  console.log(`allowance`, allowance, amount, price)
+  console.log(`allowance`, allowance, amount, price);
   const needToApprove = useMemo(() => {
-    console.log(`allowance`, allowance, amount, price)
+    console.log(`allowance`, allowance, amount, price);
     if (allowance) {
       return allowance < BigInt(amount) * BigInt(price);
     }

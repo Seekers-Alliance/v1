@@ -205,10 +205,21 @@ function OpenPackButton({
       );
     case OpenStatus.WaitingForExecution:
     case OpenStatus.WaitingForRandomWords:
+    case OpenStatus.AfterOpen:
       return (
         <>
           {contextHolder}
-          <PrimaryButton onClick={handleOpenPopup}>{waitingMsg}</PrimaryButton>
+          {(status === OpenStatus.WaitingForRandomWords ||
+            status === OpenStatus.WaitingForExecution) && (
+            <PrimaryButton onClick={handleOpenPopup}>
+              {waitingMsg}
+            </PrimaryButton>
+          )}
+          {status === OpenStatus.AfterOpen && (
+            <PrimaryButton onClick={handleAfterOpening}>
+              {waitingMsg}
+            </PrimaryButton>
+          )}
           <OpenStepsModal
             requestId={requestId}
             open={openModalVisible}
@@ -218,10 +229,6 @@ function OpenPackButton({
             amount={packAmount}
           />
         </>
-      );
-    case OpenStatus.AfterOpen:
-      return (
-        <PrimaryButton onClick={handleAfterOpening}>{waitingMsg}</PrimaryButton>
       );
   }
 }
