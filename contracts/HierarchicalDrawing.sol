@@ -116,7 +116,7 @@ contract HierarchicalDrawing is AccessControl, IHierarchicalDrawing {
         emit SetUnitPool(_unitID);
     }
 
-    function setDrawingPool(uint32[] memory _unitIDs, uint32[] memory _probs) external onlyOwner{
+    function setDrawingPool(uint32[] memory _unitIDs, uint32[] memory _probs) external onlyOwner {
         uint32 _poolID = drawingPoolNonce;
         DrawingPoolInfo storage pool = drawingPoolsInfo[_poolID];
         if(_unitIDs.length != _probs.length) revert LengthNotMatch();
