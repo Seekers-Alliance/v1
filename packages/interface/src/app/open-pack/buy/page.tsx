@@ -78,7 +78,7 @@ export default function Page() {
       return packPrice?.native || BigInt(0);
     }
     return packPrice?.usdt || BigInt(0);
-  }, [isNative]);
+  }, [isNative, packPrice]);
   const totalCost = useMemo(() => {
     let cost = '0';
     let coin = nativeCoin;
